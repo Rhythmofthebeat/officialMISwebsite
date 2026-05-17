@@ -120,6 +120,10 @@ body.is-locked {
   overflow: hidden;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 ::selection {
   color: var(--color-on-primary);
   background: var(--color-primary);
