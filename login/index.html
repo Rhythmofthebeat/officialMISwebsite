@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Log In | Minorities in STEM</title>
-    <meta name="description" content="Log in to the Minorities in STEM community workspace.">
+    <meta name="description" content="Log in to the Minorities in STEM community board.">
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/site.js" defer></script>
   </head>
@@ -14,27 +14,23 @@
     <main id="main">
       <section class="section section-alt" aria-labelledby="login-heading">
         <div class="container contact-layout">
-          <div class="content-stack">
+          <div class="content-stack login-copy">
             <p class="eyebrow">Log In</p>
-            <h1 id="login-heading">Access your community workspace.</h1>
-            <p class="lead">Create an account or sign in to post community updates. Posts are saved to the shared Minorities in STEM backend.</p>
+            <h1 id="login-heading" class="compact-page-title">Access your community board.</h1>
+            <p class="lead">Sign in with your email to post updates and manage your account.</p>
           </div>
           <form class="contact-card form-grid" data-login-form>
             <div class="form-row">
-              <label for="login-name">Name</label>
-              <input id="login-name" name="name" autocomplete="name" placeholder="Your name">
-            </div>
-            <div class="form-row">
               <label for="login-email">Email</label>
-              <input id="login-email" name="email" type="email" autocomplete="email" required>
+              <input id="login-email" name="email" type="email" autocomplete="email" required placeholder="name@example.com">
             </div>
             <div class="form-row">
               <label for="login-password">Password</label>
               <input id="login-password" name="password" type="password" autocomplete="current-password" minlength="6" required>
             </div>
             <div class="form-row">
-              <label for="login-affiliation">School or Chapter</label>
-              <input id="login-affiliation" name="affiliation" autocomplete="organization" placeholder="Woodward Academy">
+              <label for="login-school-chapter">School or Chapter</label>
+              <input id="login-school-chapter" name="school_chapter" autocomplete="organization" placeholder="Woodward Academy">
             </div>
             <div class="form-actions">
               <button class="button" type="submit" name="action" value="signin">Log In</button>

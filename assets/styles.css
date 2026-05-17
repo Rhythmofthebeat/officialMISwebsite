@@ -1155,6 +1155,20 @@ textarea {
   border: 0;
 }
 
+.compact-page-title {
+  max-width: 11ch;
+  font-size: clamp(2.25rem, 5vw, 4.5rem);
+  line-height: 1.02;
+}
+
+.login-copy .lead {
+  max-width: 40rem;
+}
+
+.static-note {
+  margin-block: calc(var(--space-2) * -1) var(--space-2);
+}
+
 .contact-layout {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(300px, 1.15fr);
@@ -1967,6 +1981,7 @@ textarea {
 }
 
 .community-post {
+  position: relative;
   display: grid;
   gap: var(--space-3);
   padding: clamp(var(--space-5), 3vw, var(--space-7));
@@ -1974,6 +1989,33 @@ textarea {
   border: 1px solid oklch(from var(--color-border) l c h / 0.72);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-md);
+}
+
+.post-delete {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  padding: 0;
+  color: var(--color-text-muted);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: var(--text-md);
+  font-weight: 900;
+  line-height: 1;
+  transition: background var(--transition-interactive), color var(--transition-interactive), transform var(--transition-interactive);
+}
+
+.post-delete:hover,
+.post-delete:focus-visible {
+  color: var(--color-on-dark);
+  background: oklch(0.54 0.21 28);
+  transform: scale(1.05);
 }
 
 .post-meta {

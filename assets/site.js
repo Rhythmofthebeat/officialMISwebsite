@@ -13,6 +13,7 @@ const navigation = [
       { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
       { label: "Partners", href: "/#partners" },
       { label: "Community Board", href: "/community" },
+      { label: "Account Settings", href: "/account" },
       { label: "Contact Us", href: "/contact" }
     ]
   },
@@ -109,7 +110,6 @@ function renderHeader() {
             </ul>
             <div class="header-actions" aria-label="Account and donation links">
               <a class="button outline" href="/login" data-auth-link>Log In</a>
-              <button class="button outline auth-logout" type="button" data-auth-logout hidden>Log Out</button>
               <a class="button donate" href="/donate">Donate</a>
             </div>
           </div>
@@ -153,6 +153,7 @@ function renderFooter() {
             <li><a href="/hackathon">MISHacks Episode 1</a></li>
             <li><a href="/events">Event Calendar</a></li>
             <li><a href="/community">Community Board</a></li>
+            <li><a href="/account">Account Settings</a></li>
             <li><a href="/get-involved/start-chapter">Starting a Chapter</a></li>
           </ul>
         </nav>
@@ -421,6 +422,7 @@ function setupReveals() {
 const authStorageKey = "mistem-user";
 const supabaseScriptSrc = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
 const supabaseConfigEndpoint = "/api/supabase-config";
+const adminEmail = "kevinz09302009@gmail.com";
 
 let supabaseLibraryPromise;
 let supabaseClientPromise;
@@ -500,16 +502,52 @@ async function getSupabaseClient() {
   return supabaseClientPromise;
 }
 
-function profileFromUser(user) {
+async function fetchProfile(client, user) {
+  if (!client || !user) return null;
+
+  const { data, error } = await client
+    .from("profiles")
+    .select("school_chapter,linkedin,instagram,website")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error) return null;
+  return data || null;
+}
+
+function profileFromUser(user, profile = null) {
   if (!user) return null;
   const metadata = user.user_metadata || {};
   const stored = readJSON(authStorageKey, {});
+  const school = profile?.school_chapter || metadata.school_chapter || metadata.affiliation || stored.school_chapter || stored.affiliation || "";
   return {
     id: user.id,
     email: user.email || stored.email || "",
-    name: metadata.full_name || stored.name || user.email || "Member",
-    affiliation: metadata.affiliation || stored.affiliation || ""
+    name: user.email || stored.email || "Member",
+    school_chapter: school,
+    affiliation: school,
+    linkedin: profile?.linkedin || stored.linkedin || "",
+    instagram: profile?.instagram || stored.instagram || "",
+    website: profile?.website || stored.website || ""
   };
+}
+
+async function ensureProfile(client, user, profile) {
+  if (!client || !user || profile) return profile;
+  const metadata = user.user_metadata || {};
+  const nextProfile = {
+    id: user.id,
+    email: user.email,
+    school_chapter: metadata.school_chapter || metadata.affiliation || null
+  };
+
+  const { data } = await client
+    .from("profiles")
+    .upsert(nextProfile, { onConflict: "id" })
+    .select("school_chapter,linkedin,instagram,website")
+    .maybeSingle();
+
+  return data || profile;
 }
 
 async function getCurrentUser() {
@@ -519,27 +557,27 @@ async function getCurrentUser() {
   const { data, error } = await client.auth.getSession();
   if (error || !data?.session?.user) return null;
 
-  const profile = profileFromUser(data.session.user);
-  if (profile) writeJSON(authStorageKey, profile);
-  return profile;
+  let profile = await fetchProfile(client, data.session.user);
+  profile = await ensureProfile(client, data.session.user, profile);
+  const userProfile = profileFromUser(data.session.user, profile);
+  if (userProfile) writeJSON(authStorageKey, userProfile);
+  return userProfile;
 }
 
 async function updateAuthUI() {
   const user = await getCurrentUser().catch(() => null);
   document.querySelectorAll("[data-auth-link]").forEach((link) => {
     if (user) {
-      link.textContent = "Workspace";
-      link.setAttribute("href", "/community");
-      link.setAttribute("aria-label", "Open " + (user.name || "your") + " workspace");
+      link.textContent = "Log Out";
+      link.setAttribute("href", "#logout");
+      link.setAttribute("aria-label", "Log out");
+      link.dataset.authState = "authenticated";
     } else {
       link.textContent = "Log In";
       link.setAttribute("href", "/login");
       link.setAttribute("aria-label", "Log in");
+      link.dataset.authState = "anonymous";
     }
-  });
-
-  document.querySelectorAll("[data-auth-logout]").forEach((button) => {
-    button.hidden = !user;
   });
 }
 
@@ -573,11 +611,10 @@ async function setupLogin() {
   }
 
   if (user) {
-    getField(form, "name").value = user.name || "";
     getField(form, "email").value = user.email || "";
-    getField(form, "affiliation").value = user.affiliation || "";
+    getField(form, "school_chapter").value = user.school_chapter || "";
     if (logoutButton) logoutButton.hidden = false;
-    setFormNote(note, "Signed in as " + (user.name || user.email) + ".");
+    setFormNote(note, "Signed in as " + user.email + ".");
   }
 
   if (logoutButton) {
@@ -591,7 +628,7 @@ async function setupLogin() {
 
   if (resetButton) {
     resetButton.addEventListener("click", async () => {
-      const email = String(getField(form, "email").value || "").trim();
+      const email = String(getField(form, "email").value || "").trim().toLowerCase();
       if (!email) {
         setFormNote(note, "Enter your email first, then click Forgot Password.", true);
         getField(form, "email").focus();
@@ -646,15 +683,9 @@ async function setupLogin() {
     }
 
     const action = event.submitter?.value || "signin";
-    const email = String(getField(form, "email").value || "").trim();
+    const email = String(getField(form, "email").value || "").trim().toLowerCase();
     const password = String(getField(form, "password").value || "");
-    const name = String(getField(form, "name").value || "").trim();
-    const affiliation = String(getField(form, "affiliation").value || "").trim();
-
-    if (action === "signup" && !name) {
-      setFormNote(note, "Add your name before creating an account.", true);
-      return;
-    }
+    const schoolChapter = String(getField(form, "school_chapter").value || "").trim();
 
     setFormBusy(form, true);
     setFormNote(note, action === "signup" ? "Creating your account..." : "Signing you in...");
@@ -663,7 +694,7 @@ async function setupLogin() {
       ? await client.auth.signUp({
           email,
           password,
-          options: { data: { full_name: name, affiliation } }
+          options: { data: { school_chapter: schoolChapter } }
         })
       : await client.auth.signInWithPassword({ email, password });
 
@@ -674,7 +705,15 @@ async function setupLogin() {
       return;
     }
 
-    const profile = profileFromUser(result.data.user) || { email, name, affiliation };
+    if (result.data.user && result.data.session) {
+      await client.from("profiles").upsert({
+        id: result.data.user.id,
+        email: result.data.user.email,
+        school_chapter: schoolChapter || null
+      }, { onConflict: "id" });
+    }
+
+    const profile = profileFromUser(result.data.user) || { email, school_chapter: schoolChapter };
     writeJSON(authStorageKey, profile);
     await updateAuthUI();
 
@@ -708,7 +747,7 @@ function formatDate(value) {
   }
 }
 
-function renderCommunityPosts(target, posts = []) {
+function renderCommunityPosts(target, posts = [], options = {}) {
   const defaults = [
     {
       title: "Welcome to the MIS community board",
@@ -721,14 +760,16 @@ function renderCommunityPosts(target, posts = []) {
     }
   ];
   const visiblePosts = posts.length ? posts : defaults;
+  const isAdmin = Boolean(options.isAdmin);
   target.innerHTML = visiblePosts
     .map((post) => {
-      const status = post.status && post.status !== "approved" ? '<span class="tag muted-tag">' + escapeHTML(post.status) + '</span>' : "";
+      const deleteButton = isAdmin && post.id
+        ? '<button class="post-delete" type="button" data-delete-post="' + escapeHTML(post.id) + '" aria-label="Delete post">x</button>'
+        : "";
       return [
         '<article class="community-post">',
+        deleteButton,
         '<div class="post-meta">',
-        '<span class="tag">' + escapeHTML(post.type || "Update") + '</span>',
-        status,
         '<time datetime="' + escapeHTML(post.created_at || "") + '">' + formatDate(post.created_at) + '</time>',
         '</div>',
         '<h3>' + escapeHTML(post.title || "Untitled update") + '</h3>',
@@ -740,10 +781,11 @@ function renderCommunityPosts(target, posts = []) {
     .join("");
 }
 
-async function loadCommunityPosts(client, target, note) {
+async function loadCommunityPosts(client, target, note, options = {}) {
   const { data, error } = await client
     .from("posts")
     .select("id,title,type,body,status,author_name,author_affiliation,created_at")
+    .eq("status", "approved")
     .order("created_at", { ascending: false })
     .limit(30);
 
@@ -753,16 +795,17 @@ async function loadCommunityPosts(client, target, note) {
     return;
   }
 
-  renderCommunityPosts(target, data || []);
+  renderCommunityPosts(target, data || [], options);
 }
 
-async function setupAuthLogout() {
-  document.querySelectorAll("[data-auth-logout]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      button.disabled = true;
+async function setupAuthAction() {
+  document.querySelectorAll("[data-auth-link]").forEach((link) => {
+    link.addEventListener("click", async (event) => {
+      if (link.dataset.authState !== "authenticated") return;
+      event.preventDefault();
+      link.textContent = "Logging Out...";
       await signOutUser();
-      button.disabled = false;
-      if (window.location.pathname.startsWith("/community")) {
+      if (window.location.pathname.startsWith("/community") || window.location.pathname.startsWith("/account")) {
         window.location.href = "/login";
       }
     });
@@ -782,11 +825,42 @@ async function setupCommunityBoard() {
     return;
   }
 
-  await loadCommunityPosts(client, postsTarget, note);
-  const user = await getCurrentUser();
+  let user = await getCurrentUser();
+  let isAdmin = user?.email?.toLowerCase() === adminEmail;
+  await loadCommunityPosts(client, postsTarget, note, { isAdmin });
   if (!user) {
     setFormNote(note, "Log in first to publish a post.", true);
+  } else {
+    setFormNote(note, "Posts publish immediately.");
   }
+
+  postsTarget.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-delete-post]");
+    if (!button) return;
+
+    const activeUser = await getCurrentUser();
+    if (activeUser?.email?.toLowerCase() !== adminEmail) {
+      setFormNote(note, "Only the admin can delete posts.", true);
+      return;
+    }
+
+    button.disabled = true;
+    const { error } = await client
+      .from("posts")
+      .delete()
+      .eq("id", button.dataset.deletePost);
+
+    if (error) {
+      button.disabled = false;
+      setFormNote(note, error.message, true);
+      return;
+    }
+
+    user = activeUser;
+    isAdmin = true;
+    await loadCommunityPosts(client, postsTarget, note, { isAdmin });
+    setFormNote(note, "Post deleted.");
+  });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -807,13 +881,13 @@ async function setupCommunityBoard() {
       title: String(formData.get("title") || "").trim(),
       type: String(formData.get("type") || "Chapter Update"),
       body: String(formData.get("body") || "").trim(),
-      author_name: activeUser.name || activeUser.email,
-      author_affiliation: activeUser.affiliation || "",
-      status: "pending"
+      author_name: activeUser.email,
+      author_affiliation: activeUser.school_chapter || "",
+      status: "approved"
     };
 
     setFormBusy(form, true);
-    setFormNote(note, "Submitting for approval...");
+    setFormNote(note, "Publishing...");
     const { error } = await client.from("posts").insert(nextPost);
     setFormBusy(form, false);
 
@@ -823,8 +897,75 @@ async function setupCommunityBoard() {
     }
 
     form.reset();
-    await loadCommunityPosts(client, postsTarget, note);
-    setFormNote(note, "Post submitted. It will appear publicly after approval.");
+    user = activeUser;
+    isAdmin = activeUser.email?.toLowerCase() === adminEmail;
+    await loadCommunityPosts(client, postsTarget, note, { isAdmin });
+    setFormNote(note, "Post published.");
+  });
+}
+
+async function setupAccountSettings() {
+  const form = document.querySelector("[data-account-form]");
+  if (!form) return;
+
+  const note = form.querySelector(".form-note");
+  const client = await getSupabaseClient();
+  if (!client) {
+    setFormNote(note, "Supabase is not configured yet.", true);
+    return;
+  }
+
+  const user = await getCurrentUser();
+  if (!user) {
+    setFormNote(note, "Log in before editing account settings.", true);
+    window.setTimeout(() => {
+      window.location.href = "/login";
+    }, 700);
+    return;
+  }
+
+  getField(form, "school_chapter").value = user.school_chapter || "";
+  getField(form, "linkedin").value = user.linkedin || "";
+  getField(form, "instagram").value = user.instagram || "";
+  getField(form, "website").value = user.website || "";
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const profile = {
+      id: user.id,
+      email: user.email,
+      school_chapter: String(getField(form, "school_chapter").value || "").trim(),
+      linkedin: String(getField(form, "linkedin").value || "").trim(),
+      instagram: String(getField(form, "instagram").value || "").trim(),
+      website: String(getField(form, "website").value || "").trim(),
+      updated_at: new Date().toISOString()
+    };
+
+    setFormBusy(form, true);
+    const { error } = await client
+      .from("profiles")
+      .upsert(profile, { onConflict: "id" });
+
+    if (!error) {
+      await client.auth.updateUser({
+        data: { school_chapter: profile.school_chapter }
+      });
+      writeJSON(authStorageKey, { ...user, ...profile, affiliation: profile.school_chapter });
+      await updateAuthUI();
+    }
+    setFormBusy(form, false);
+
+    if (error) {
+      setFormNote(note, error.message, true);
+      return;
+    }
+
+    setFormNote(note, "Account settings saved.");
   });
 }
 
@@ -834,8 +975,9 @@ setupFavicon();
 setupTheme();
 setupNavigation();
 setupForms();
-setupAuthLogout();
+setupAuthAction();
 setupLogin();
 setupCommunityBoard();
+setupAccountSettings();
 updateAuthUI();
 setupReveals();
