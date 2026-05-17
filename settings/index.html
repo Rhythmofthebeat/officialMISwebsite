@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings | Minorities in STEM</title>
+    <meta name="description" content="Manage your Minorities in STEM account settings and socials.">
+    <link rel="stylesheet" href="/assets/styles.css">
+    <script src="/assets/site.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div id="site-header"></div>
+    <main id="main">
+      <section class="section section-alt" aria-labelledby="settings-heading">
+        <div class="container contact-layout">
+          <div class="content-stack login-copy">
+            <p class="eyebrow">Settings</p>
+            <h1 id="settings-heading" class="compact-page-title">Manage your profile.</h1>
+            <p class="lead">Store your username, socials, and school/chapter details for the community board.</p>
+          </div>
+          <form class="contact-card form-grid" data-account-form>
+            <div class="form-row">
+              <label for="account-username">Username</label>
+              <input id="account-username" name="username" autocomplete="username" required placeholder="yourname">
+            </div>
+            <div class="form-row">
+              <label for="account-school-chapter">School or Chapter</label>
+              <input id="account-school-chapter" name="school_chapter" autocomplete="organization" placeholder="Woodward Academy">
+            </div>
+            <div class="form-row">
+              <label for="account-linkedin">LinkedIn</label>
+              <input id="account-linkedin" name="linkedin" type="url" inputmode="url" placeholder="https://www.linkedin.com/in/yourname">
+            </div>
+            <div class="form-row">
+              <label for="account-instagram">Instagram</label>
+              <input id="account-instagram" name="instagram" placeholder="@yourhandle">
+            </div>
+            <div class="form-row">
+              <label for="account-website">Website</label>
+              <input id="account-website" name="website" type="url" inputmode="url" placeholder="https://your-site.com">
+            </div>
+            <button class="button" type="submit">Save Settings</button>
+            <p class="form-note" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+    <div id="site-footer"></div>
+  </body>
+</html>

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Account Settings | Minorities in STEM</title>
-    <meta name="description" content="Manage your Minorities in STEM account profile and socials.">
+    <meta name="description" content="Manage your Minorities in STEM account settings and socials.">
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/site.js" defer></script>
   </head>
@@ -15,11 +15,15 @@
       <section class="section section-alt" aria-labelledby="account-heading">
         <div class="container contact-layout">
           <div class="content-stack login-copy">
-            <p class="eyebrow">Account</p>
+            <p class="eyebrow">Settings</p>
             <h1 id="account-heading" class="compact-page-title">Manage your profile.</h1>
-            <p class="lead">Add the socials or school/chapter details you want connected to your community posts.</p>
+            <p class="lead">Store your username, socials, and school/chapter details for the community board.</p>
           </div>
           <form class="contact-card form-grid" data-account-form>
+            <div class="form-row">
+              <label for="account-username">Username</label>
+              <input id="account-username" name="username" autocomplete="username" required placeholder="yourname">
+            </div>
             <div class="form-row">
               <label for="account-school-chapter">School or Chapter</label>
               <input id="account-school-chapter" name="school_chapter" autocomplete="organization" placeholder="Woodward Academy">

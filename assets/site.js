@@ -13,7 +13,7 @@ const navigation = [
       { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
       { label: "Partners", href: "/#partners" },
       { label: "Community Board", href: "/community" },
-      { label: "Account Settings", href: "/account" },
+      { label: "Settings", href: "/settings" },
       { label: "Contact Us", href: "/contact" }
     ]
   },
@@ -153,7 +153,7 @@ function renderFooter() {
             <li><a href="/hackathon">MISHacks Episode 1</a></li>
             <li><a href="/events">Event Calendar</a></li>
             <li><a href="/community">Community Board</a></li>
-            <li><a href="/account">Account Settings</a></li>
+            <li><a href="/settings">Settings</a></li>
             <li><a href="/get-involved/start-chapter">Starting a Chapter</a></li>
           </ul>
         </nav>
@@ -468,6 +468,18 @@ function getField(form, name) {
   return form.elements.namedItem(name);
 }
 
+function normalizeUsername(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^@+/, "")
+    .replace(/[^a-z0-9._-]/g, "");
+}
+
+function isEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+}
+
 function loadSupabaseLibrary() {
   if (window.supabase?.createClient) return Promise.resolve(window.supabase);
   if (supabaseLibraryPromise) return supabaseLibraryPromise;
@@ -507,7 +519,7 @@ async function fetchProfile(client, user) {
 
   const { data, error } = await client
     .from("profiles")
-    .select("school_chapter,linkedin,instagram,website")
+    .select("username,school_chapter,linkedin,instagram,website")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -519,11 +531,13 @@ function profileFromUser(user, profile = null) {
   if (!user) return null;
   const metadata = user.user_metadata || {};
   const stored = readJSON(authStorageKey, {});
+  const username = profile?.username || metadata.username || stored.username || "";
   const school = profile?.school_chapter || metadata.school_chapter || metadata.affiliation || stored.school_chapter || stored.affiliation || "";
   return {
     id: user.id,
     email: user.email || stored.email || "",
-    name: user.email || stored.email || "Member",
+    username,
+    name: username || user.email || stored.email || "Member",
     school_chapter: school,
     affiliation: school,
     linkedin: profile?.linkedin || stored.linkedin || "",
@@ -535,16 +549,18 @@ function profileFromUser(user, profile = null) {
 async function ensureProfile(client, user, profile) {
   if (!client || !user || profile) return profile;
   const metadata = user.user_metadata || {};
+  const fallbackUsername = normalizeUsername(metadata.username || String(user.email || "").split("@")[0]);
   const nextProfile = {
     id: user.id,
     email: user.email,
+    username: fallbackUsername || null,
     school_chapter: metadata.school_chapter || metadata.affiliation || null
   };
 
   const { data } = await client
     .from("profiles")
     .upsert(nextProfile, { onConflict: "id" })
-    .select("school_chapter,linkedin,instagram,website")
+    .select("username,school_chapter,linkedin,instagram,website")
     .maybeSingle();
 
   return data || profile;
@@ -588,6 +604,18 @@ async function signOutUser() {
   await updateAuthUI();
 }
 
+async function resolveAuthEmail(client, identifier) {
+  const value = String(identifier || "").trim();
+  if (isEmail(value)) return value.toLowerCase();
+
+  const username = normalizeUsername(value);
+  if (!username) return "";
+
+  const { data, error } = await client.rpc("email_for_username", { lookup_username: username });
+  if (error || !data) return "";
+  return String(data).toLowerCase();
+}
+
 async function setupLogin() {
   const form = document.querySelector("[data-login-form]");
   if (!form) return;
@@ -611,10 +639,12 @@ async function setupLogin() {
   }
 
   if (user) {
+    getField(form, "identifier").value = user.username || user.email || "";
     getField(form, "email").value = user.email || "";
+    getField(form, "username").value = user.username || "";
     getField(form, "school_chapter").value = user.school_chapter || "";
     if (logoutButton) logoutButton.hidden = false;
-    setFormNote(note, "Signed in as " + user.email + ".");
+    setFormNote(note, "Signed in as " + (user.username || user.email) + ".");
   }
 
   if (logoutButton) {
@@ -628,14 +658,21 @@ async function setupLogin() {
 
   if (resetButton) {
     resetButton.addEventListener("click", async () => {
-      const email = String(getField(form, "email").value || "").trim().toLowerCase();
-      if (!email) {
-        setFormNote(note, "Enter your email first, then click Forgot Password.", true);
-        getField(form, "email").focus();
+      const identifier = String(getField(form, "identifier").value || getField(form, "email").value || "").trim();
+      if (!identifier) {
+        setFormNote(note, "Enter your email or username first, then click Forgot Password.", true);
+        getField(form, "identifier").focus();
         return;
       }
 
       setFormBusy(form, true);
+      const email = await resolveAuthEmail(client, identifier);
+      if (!email) {
+        setFormBusy(form, false);
+        setFormNote(note, "We could not find that username. Try your email address.", true);
+        return;
+      }
+
       const { error } = await client.auth.resetPasswordForEmail(email, {
         redirectTo: window.location.origin + "/login"
       });
@@ -683,20 +720,43 @@ async function setupLogin() {
     }
 
     const action = event.submitter?.value || "signin";
+    const identifier = String(getField(form, "identifier").value || "").trim();
     const email = String(getField(form, "email").value || "").trim().toLowerCase();
+    const username = normalizeUsername(getField(form, "username").value);
     const password = String(getField(form, "password").value || "");
     const schoolChapter = String(getField(form, "school_chapter").value || "").trim();
+
+    if (action === "signin" && !identifier) {
+      setFormNote(note, "Enter your username or email to log in.", true);
+      getField(form, "identifier").focus();
+      return;
+    }
 
     setFormBusy(form, true);
     setFormNote(note, action === "signup" ? "Creating your account..." : "Signing you in...");
 
-    const result = action === "signup"
-      ? await client.auth.signUp({
-          email,
-          password,
-          options: { data: { school_chapter: schoolChapter } }
-        })
-      : await client.auth.signInWithPassword({ email, password });
+    let result;
+    if (action === "signup") {
+      if (!email || !username) {
+        setFormBusy(form, false);
+        setFormNote(note, "Create an account with both an email and username.", true);
+        return;
+      }
+
+      result = await client.auth.signUp({
+        email,
+        password,
+        options: { data: { username, school_chapter: schoolChapter } }
+      });
+    } else {
+      const authEmail = await resolveAuthEmail(client, identifier);
+      if (!authEmail) {
+        setFormBusy(form, false);
+        setFormNote(note, "We could not find that username. Try your email address.", true);
+        return;
+      }
+      result = await client.auth.signInWithPassword({ email: authEmail, password });
+    }
 
     setFormBusy(form, false);
 
@@ -709,11 +769,12 @@ async function setupLogin() {
       await client.from("profiles").upsert({
         id: result.data.user.id,
         email: result.data.user.email,
+        username: username || result.data.user.user_metadata?.username || null,
         school_chapter: schoolChapter || null
       }, { onConflict: "id" });
     }
 
-    const profile = profileFromUser(result.data.user) || { email, school_chapter: schoolChapter };
+    const profile = profileFromUser(result.data.user) || { email: email || identifier, username, school_chapter: schoolChapter };
     writeJSON(authStorageKey, profile);
     await updateAuthUI();
 
@@ -805,7 +866,7 @@ async function setupAuthAction() {
       event.preventDefault();
       link.textContent = "Logging Out...";
       await signOutUser();
-      if (window.location.pathname.startsWith("/community") || window.location.pathname.startsWith("/account")) {
+      if (window.location.pathname.startsWith("/community") || window.location.pathname.startsWith("/account") || window.location.pathname.startsWith("/settings")) {
         window.location.href = "/login";
       }
     });
@@ -881,7 +942,7 @@ async function setupCommunityBoard() {
       title: String(formData.get("title") || "").trim(),
       type: String(formData.get("type") || "Chapter Update"),
       body: String(formData.get("body") || "").trim(),
-      author_name: activeUser.email,
+      author_name: activeUser.username || activeUser.email,
       author_affiliation: activeUser.school_chapter || "",
       status: "approved"
     };
@@ -917,13 +978,14 @@ async function setupAccountSettings() {
 
   const user = await getCurrentUser();
   if (!user) {
-    setFormNote(note, "Log in before editing account settings.", true);
+    setFormNote(note, "Log in before editing settings.", true);
     window.setTimeout(() => {
       window.location.href = "/login";
     }, 700);
     return;
   }
 
+  getField(form, "username").value = user.username || "";
   getField(form, "school_chapter").value = user.school_chapter || "";
   getField(form, "linkedin").value = user.linkedin || "";
   getField(form, "instagram").value = user.instagram || "";
@@ -939,12 +1001,18 @@ async function setupAccountSettings() {
     const profile = {
       id: user.id,
       email: user.email,
+      username: normalizeUsername(getField(form, "username").value),
       school_chapter: String(getField(form, "school_chapter").value || "").trim(),
       linkedin: String(getField(form, "linkedin").value || "").trim(),
       instagram: String(getField(form, "instagram").value || "").trim(),
       website: String(getField(form, "website").value || "").trim(),
       updated_at: new Date().toISOString()
     };
+
+    if (!profile.username) {
+      setFormNote(note, "Choose a username.", true);
+      return;
+    }
 
     setFormBusy(form, true);
     const { error } = await client
@@ -953,19 +1021,22 @@ async function setupAccountSettings() {
 
     if (!error) {
       await client.auth.updateUser({
-        data: { school_chapter: profile.school_chapter }
+        data: {
+          username: profile.username,
+          school_chapter: profile.school_chapter
+        }
       });
-      writeJSON(authStorageKey, { ...user, ...profile, affiliation: profile.school_chapter });
+      writeJSON(authStorageKey, { ...user, ...profile, name: profile.username, affiliation: profile.school_chapter });
       await updateAuthUI();
     }
     setFormBusy(form, false);
 
     if (error) {
-      setFormNote(note, error.message, true);
+      setFormNote(note, error.message.includes("duplicate") ? "That username is already taken." : error.message, true);
       return;
     }
 
-    setFormNote(note, "Account settings saved.");
+    setFormNote(note, "Settings saved.");
   });
 }
 
