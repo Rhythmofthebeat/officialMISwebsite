@@ -418,7 +418,11 @@ function setupReveals() {
 }
 
 const authStorageKey = "mistem-user";
-const postStorageKey = "mistem-community-posts";
+const supabaseScriptSrc = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+const supabaseConfigEndpoint = "/api/supabase-config";
+
+let supabaseLibraryPromise;
+let supabaseClientPromise;
 
 function readJSON(key, fallback) {
   try {
@@ -437,18 +441,95 @@ function writeJSON(key, value) {
   }
 }
 
-function getCurrentUser() {
-  const user = readJSON(authStorageKey, null);
-  return user && user.email ? user : null;
+function clearJSON(key) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Local storage can be unavailable in some browsing contexts.
+  }
 }
 
-function updateAuthUI() {
-  const user = getCurrentUser();
+function setFormNote(note, message, isError = false) {
+  if (!note) return;
+  note.textContent = message;
+  note.classList.toggle("is-error", isError);
+}
+
+function setFormBusy(form, isBusy) {
+  form.querySelectorAll("button, input, select, textarea").forEach((field) => {
+    field.disabled = isBusy;
+  });
+}
+
+function getField(form, name) {
+  return form.elements.namedItem(name);
+}
+
+function loadSupabaseLibrary() {
+  if (window.supabase?.createClient) return Promise.resolve(window.supabase);
+  if (supabaseLibraryPromise) return supabaseLibraryPromise;
+
+  supabaseLibraryPromise = new Promise((resolve, reject) => {
+    const existing = document.querySelector('script[src="' + supabaseScriptSrc + '"]');
+    const script = existing || document.createElement("script");
+    script.src = supabaseScriptSrc;
+    script.async = true;
+    script.onload = () => resolve(window.supabase);
+    script.onerror = () => reject(new Error("Could not load Supabase."));
+    if (!existing) document.head.append(script);
+  });
+
+  return supabaseLibraryPromise;
+}
+
+async function getSupabaseClient() {
+  if (supabaseClientPromise) return supabaseClientPromise;
+
+  supabaseClientPromise = (async () => {
+    const response = await fetch(supabaseConfigEndpoint, { headers: { Accept: "application/json" } });
+    if (!response.ok) return null;
+
+    const config = await response.json();
+    if (!config?.configured || !config.supabaseUrl || !config.supabaseAnonKey) return null;
+
+    const library = await loadSupabaseLibrary();
+    return library.createClient(config.supabaseUrl, config.supabaseAnonKey);
+  })().catch(() => null);
+
+  return supabaseClientPromise;
+}
+
+function profileFromUser(user) {
+  if (!user) return null;
+  const metadata = user.user_metadata || {};
+  const stored = readJSON(authStorageKey, {});
+  return {
+    id: user.id,
+    email: user.email || stored.email || "",
+    name: metadata.full_name || stored.name || user.email || "Member",
+    affiliation: metadata.affiliation || stored.affiliation || ""
+  };
+}
+
+async function getCurrentUser() {
+  const client = await getSupabaseClient();
+  if (!client) return null;
+
+  const { data, error } = await client.auth.getSession();
+  if (error || !data?.session?.user) return null;
+
+  const profile = profileFromUser(data.session.user);
+  if (profile) writeJSON(authStorageKey, profile);
+  return profile;
+}
+
+async function updateAuthUI() {
+  const user = await getCurrentUser().catch(() => null);
   document.querySelectorAll("[data-auth-link]").forEach((link) => {
     if (user) {
       link.textContent = "Workspace";
       link.setAttribute("href", "/community");
-      link.setAttribute("aria-label", `Open ${user.name || "your"} workspace`);
+      link.setAttribute("aria-label", "Open " + (user.name || "your") + " workspace");
     } else {
       link.textContent = "Log In";
       link.setAttribute("href", "/login");
@@ -457,36 +538,83 @@ function updateAuthUI() {
   });
 }
 
-function setupLogin() {
+async function setupLogin() {
   const form = document.querySelector("[data-login-form]");
   if (!form) return;
 
   const note = form.querySelector(".form-note");
-  const user = getCurrentUser();
-  if (user) {
-    form.elements.name.value = user.name || "";
-    form.elements.email.value = user.email || "";
-    form.elements.affiliation.value = user.affiliation || "";
-    if (note) note.textContent = `Signed in as ${user.name || user.email}.`;
+  const logoutButton = form.querySelector("[data-logout]");
+  const client = await getSupabaseClient();
+  if (!client) {
+    setFormNote(note, "Supabase is not configured yet. Add the Vercel environment variables, redeploy, then login will work.", true);
+    return;
   }
 
-  form.addEventListener("submit", (event) => {
+  const user = await getCurrentUser();
+  if (user) {
+    getField(form, "name").value = user.name || "";
+    getField(form, "email").value = user.email || "";
+    getField(form, "affiliation").value = user.affiliation || "";
+    if (logoutButton) logoutButton.hidden = false;
+    setFormNote(note, "Signed in as " + (user.name || user.email) + ".");
+  }
+
+  if (logoutButton) {
+    logoutButton.addEventListener("click", async () => {
+      await client.auth.signOut();
+      clearJSON(authStorageKey);
+      await updateAuthUI();
+      setFormNote(note, "Logged out.");
+      logoutButton.hidden = true;
+    });
+  }
+
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
     }
 
-    const formData = new FormData(form);
-    const nextUser = {
-      name: String(formData.get("name") || "").trim(),
-      email: String(formData.get("email") || "").trim(),
-      affiliation: String(formData.get("affiliation") || "").trim(),
-      signedInAt: new Date().toISOString()
-    };
-    writeJSON(authStorageKey, nextUser);
-    updateAuthUI();
-    if (note) note.textContent = "Login saved. Opening your community board...";
+    const action = event.submitter?.value || "signin";
+    const email = String(getField(form, "email").value || "").trim();
+    const password = String(getField(form, "password").value || "");
+    const name = String(getField(form, "name").value || "").trim();
+    const affiliation = String(getField(form, "affiliation").value || "").trim();
+
+    if (action === "signup" && !name) {
+      setFormNote(note, "Add your name before creating an account.", true);
+      return;
+    }
+
+    setFormBusy(form, true);
+    setFormNote(note, action === "signup" ? "Creating your account..." : "Signing you in...");
+
+    const result = action === "signup"
+      ? await client.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: name, affiliation } }
+        })
+      : await client.auth.signInWithPassword({ email, password });
+
+    setFormBusy(form, false);
+
+    if (result.error) {
+      setFormNote(note, result.error.message, true);
+      return;
+    }
+
+    const profile = profileFromUser(result.data.user) || { email, name, affiliation };
+    writeJSON(authStorageKey, profile);
+    await updateAuthUI();
+
+    if (action === "signup" && !result.data.session) {
+      setFormNote(note, "Account created. Check your email to confirm your login.");
+      return;
+    }
+
+    setFormNote(note, "Logged in. Opening your community board...");
     window.setTimeout(() => {
       window.location.href = "/community";
     }, 500);
@@ -511,73 +639,110 @@ function formatDate(value) {
   }
 }
 
-function renderCommunityPosts(target) {
-  const posts = readJSON(postStorageKey, []);
+function renderCommunityPosts(target, posts = []) {
   const defaults = [
     {
       title: "Welcome to the MIS community board",
       type: "Chapter Update",
       body: "Share chapter wins, event recaps, project launches, questions, and opportunities here.",
-      author: "Minorities in STEM",
-      affiliation: "Core Team",
-      createdAt: new Date().toISOString()
+      author_name: "Minorities in STEM",
+      author_affiliation: "Core Team",
+      status: "approved",
+      created_at: new Date().toISOString()
     }
   ];
   const visiblePosts = posts.length ? posts : defaults;
   target.innerHTML = visiblePosts
-    .map((post) => `
-      <article class="community-post">
-        <div class="post-meta">
-          <span class="tag">${escapeHTML(post.type || "Update")}</span>
-          <time datetime="${escapeHTML(post.createdAt || "")}">${formatDate(post.createdAt)}</time>
-        </div>
-        <h3>${escapeHTML(post.title || "Untitled update")}</h3>
-        <p>${escapeHTML(post.body || "")}</p>
-        <p class="role">${escapeHTML(post.author || "Anonymous")}${post.affiliation ? ` · ${escapeHTML(post.affiliation)}` : ""}</p>
-      </article>
-    `)
+    .map((post) => {
+      const status = post.status && post.status !== "approved" ? '<span class="tag muted-tag">' + escapeHTML(post.status) + '</span>' : "";
+      return [
+        '<article class="community-post">',
+        '<div class="post-meta">',
+        '<span class="tag">' + escapeHTML(post.type || "Update") + '</span>',
+        status,
+        '<time datetime="' + escapeHTML(post.created_at || "") + '">' + formatDate(post.created_at) + '</time>',
+        '</div>',
+        '<h3>' + escapeHTML(post.title || "Untitled update") + '</h3>',
+        '<p>' + escapeHTML(post.body || "") + '</p>',
+        '<p class="role">' + escapeHTML(post.author_name || "Anonymous") + (post.author_affiliation ? ' - ' + escapeHTML(post.author_affiliation) : "") + '</p>',
+        '</article>'
+      ].join("");
+    })
     .join("");
 }
 
-function setupCommunityBoard() {
+async function loadCommunityPosts(client, target, note) {
+  const { data, error } = await client
+    .from("posts")
+    .select("id,title,type,body,status,author_name,author_affiliation,created_at")
+    .order("created_at", { ascending: false })
+    .limit(30);
+
+  if (error) {
+    renderCommunityPosts(target, []);
+    setFormNote(note, "Could not load posts: " + error.message, true);
+    return;
+  }
+
+  renderCommunityPosts(target, data || []);
+}
+
+async function setupCommunityBoard() {
   const form = document.querySelector("[data-community-form]");
   const postsTarget = document.querySelector("[data-community-posts]");
   if (!form || !postsTarget) return;
 
-  renderCommunityPosts(postsTarget);
   const note = form.querySelector(".form-note");
-  const user = getCurrentUser();
-  if (!user && note) {
-    note.innerHTML = 'Log in first to attach your name to a post. <a href="/login">Log in</a>';
+  const client = await getSupabaseClient();
+  if (!client) {
+    renderCommunityPosts(postsTarget, []);
+    setFormNote(note, "Supabase is not configured yet. Add Vercel environment variables before publishing posts.", true);
+    return;
   }
 
-  form.addEventListener("submit", (event) => {
+  await loadCommunityPosts(client, postsTarget, note);
+  const user = await getCurrentUser();
+  if (!user) {
+    setFormNote(note, "Log in first to publish a post.", true);
+  }
+
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (!form.checkValidity()) {
       form.reportValidity();
       return;
     }
 
-    const activeUser = getCurrentUser();
+    const activeUser = await getCurrentUser();
     if (!activeUser) {
-      if (note) note.innerHTML = 'Please <a href="/login">log in</a> before posting.';
+      setFormNote(note, "Please log in before posting.", true);
       return;
     }
 
     const formData = new FormData(form);
-    const posts = readJSON(postStorageKey, []);
-    posts.unshift({
+    const nextPost = {
+      user_id: activeUser.id,
       title: String(formData.get("title") || "").trim(),
       type: String(formData.get("type") || "Chapter Update"),
       body: String(formData.get("body") || "").trim(),
-      author: activeUser.name || activeUser.email,
-      affiliation: activeUser.affiliation || "",
-      createdAt: new Date().toISOString()
-    });
-    writeJSON(postStorageKey, posts.slice(0, 20));
+      author_name: activeUser.name || activeUser.email,
+      author_affiliation: activeUser.affiliation || "",
+      status: "pending"
+    };
+
+    setFormBusy(form, true);
+    setFormNote(note, "Submitting for approval...");
+    const { error } = await client.from("posts").insert(nextPost);
+    setFormBusy(form, false);
+
+    if (error) {
+      setFormNote(note, error.message, true);
+      return;
+    }
+
     form.reset();
-    renderCommunityPosts(postsTarget);
-    if (note) note.textContent = "Update posted.";
+    await loadCommunityPosts(client, postsTarget, note);
+    setFormNote(note, "Post submitted. It will appear publicly after approval.");
   });
 }
 

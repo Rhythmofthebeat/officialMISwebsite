@@ -99,6 +99,21 @@ createServer(async (request, response) => {
   const requestedPathname = shouldServeHackathonRoot(request.headers.host, url.pathname) ? "/hackathon" : url.pathname;
   const placeholderMatch = url.pathname.match(/^\/api\/placeholder\/(\d+)\/(\d+)$/);
 
+  if (url.pathname === "/api/supabase-config") {
+    const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+    response.writeHead(200, {
+      "Cache-Control": "no-store",
+      "Content-Type": mimeTypes[".json"]
+    });
+    response.end(JSON.stringify({
+      configured: Boolean(supabaseUrl && supabaseAnonKey),
+      supabaseUrl,
+      supabaseAnonKey
+    }));
+    return;
+  }
+
   if (placeholderMatch) {
     const [, width, height] = placeholderMatch;
     response.writeHead(200, {

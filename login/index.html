@@ -17,22 +17,30 @@
           <div class="content-stack">
             <p class="eyebrow">Log In</p>
             <h1 id="login-heading">Access your community workspace.</h1>
-            <p class="lead">Sign in with your name and email to share updates, save your local profile, and open the community board.</p>
+            <p class="lead">Create an account or sign in to post community updates. Posts are saved to the shared Minorities in STEM backend.</p>
           </div>
           <form class="contact-card form-grid" data-login-form>
             <div class="form-row">
               <label for="login-name">Name</label>
-              <input id="login-name" name="name" autocomplete="name" required>
+              <input id="login-name" name="name" autocomplete="name" placeholder="Your name">
             </div>
             <div class="form-row">
               <label for="login-email">Email</label>
               <input id="login-email" name="email" type="email" autocomplete="email" required>
             </div>
             <div class="form-row">
+              <label for="login-password">Password</label>
+              <input id="login-password" name="password" type="password" autocomplete="current-password" minlength="6" required>
+            </div>
+            <div class="form-row">
               <label for="login-affiliation">School or Chapter</label>
               <input id="login-affiliation" name="affiliation" autocomplete="organization" placeholder="Woodward Academy">
             </div>
-            <button class="button" type="submit">Log In</button>
+            <div class="form-actions">
+              <button class="button" type="submit" name="action" value="signin">Log In</button>
+              <button class="button outline" type="submit" name="action" value="signup">Create Account</button>
+            </div>
+            <button class="text-button" type="button" data-logout hidden>Log Out</button>
             <p class="form-note" role="status" aria-live="polite"></p>
           </form>
         </div>
