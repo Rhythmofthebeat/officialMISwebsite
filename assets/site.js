@@ -109,6 +109,7 @@ function renderHeader() {
             </ul>
             <div class="header-actions" aria-label="Account and donation links">
               <a class="button outline" href="/login" data-auth-link>Log In</a>
+              <button class="button outline auth-logout" type="button" data-auth-logout hidden>Log Out</button>
               <a class="button donate" href="/donate">Donate</a>
             </div>
           </div>
@@ -536,6 +537,17 @@ async function updateAuthUI() {
       link.setAttribute("aria-label", "Log in");
     }
   });
+
+  document.querySelectorAll("[data-auth-logout]").forEach((button) => {
+    button.hidden = !user;
+  });
+}
+
+async function signOutUser() {
+  const client = await getSupabaseClient();
+  if (client) await client.auth.signOut();
+  clearJSON(authStorageKey);
+  await updateAuthUI();
 }
 
 async function setupLogin() {
@@ -544,13 +556,22 @@ async function setupLogin() {
 
   const note = form.querySelector(".form-note");
   const logoutButton = form.querySelector("[data-logout]");
+  const resetButton = form.querySelector("[data-reset-password]");
+  const updatePasswordButton = form.querySelector("[data-update-password]");
   const client = await getSupabaseClient();
   if (!client) {
     setFormNote(note, "Supabase is not configured yet. Add the Vercel environment variables, redeploy, then login will work.", true);
     return;
   }
 
+  const hasRecoveryIntent = window.location.search.includes("code=") || window.location.hash.includes("type=recovery");
   const user = await getCurrentUser();
+  if (hasRecoveryIntent && updatePasswordButton) {
+    updatePasswordButton.hidden = false;
+    getField(form, "password").setAttribute("autocomplete", "new-password");
+    setFormNote(note, "Enter a new password, then click Update Password.");
+  }
+
   if (user) {
     getField(form, "name").value = user.name || "";
     getField(form, "email").value = user.email || "";
@@ -561,11 +582,59 @@ async function setupLogin() {
 
   if (logoutButton) {
     logoutButton.addEventListener("click", async () => {
-      await client.auth.signOut();
-      clearJSON(authStorageKey);
-      await updateAuthUI();
+      await signOutUser();
       setFormNote(note, "Logged out.");
       logoutButton.hidden = true;
+      if (updatePasswordButton) updatePasswordButton.hidden = true;
+    });
+  }
+
+  if (resetButton) {
+    resetButton.addEventListener("click", async () => {
+      const email = String(getField(form, "email").value || "").trim();
+      if (!email) {
+        setFormNote(note, "Enter your email first, then click Forgot Password.", true);
+        getField(form, "email").focus();
+        return;
+      }
+
+      setFormBusy(form, true);
+      const { error } = await client.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/login"
+      });
+      setFormBusy(form, false);
+
+      if (error) {
+        setFormNote(note, error.message, true);
+        return;
+      }
+
+      setFormNote(note, "Password reset email sent. Check your inbox.");
+    });
+  }
+
+  if (updatePasswordButton) {
+    updatePasswordButton.addEventListener("click", async () => {
+      const password = String(getField(form, "password").value || "");
+      if (password.length < 6) {
+        setFormNote(note, "Use a password with at least 6 characters.", true);
+        getField(form, "password").focus();
+        return;
+      }
+
+      setFormBusy(form, true);
+      const { error } = await client.auth.updateUser({ password });
+      setFormBusy(form, false);
+
+      if (error) {
+        setFormNote(note, error.message, true);
+        return;
+      }
+
+      setFormNote(note, "Password updated. Opening your community board...");
+      window.setTimeout(() => {
+        window.location.href = "/community";
+      }, 500);
     });
   }
 
@@ -687,6 +756,19 @@ async function loadCommunityPosts(client, target, note) {
   renderCommunityPosts(target, data || []);
 }
 
+async function setupAuthLogout() {
+  document.querySelectorAll("[data-auth-logout]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      button.disabled = true;
+      await signOutUser();
+      button.disabled = false;
+      if (window.location.pathname.startsWith("/community")) {
+        window.location.href = "/login";
+      }
+    });
+  });
+}
+
 async function setupCommunityBoard() {
   const form = document.querySelector("[data-community-form]");
   const postsTarget = document.querySelector("[data-community-posts]");
@@ -752,6 +834,7 @@ setupFavicon();
 setupTheme();
 setupNavigation();
 setupForms();
+setupAuthLogout();
 setupLogin();
 setupCommunityBoard();
 updateAuthUI();

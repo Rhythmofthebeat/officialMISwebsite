@@ -1138,6 +1138,11 @@ textarea {
   gap: var(--space-3);
 }
 
+.auth-secondary-actions {
+  grid-template-columns: 1fr;
+  justify-items: start;
+}
+
 .donation-embed {
   justify-items: center;
   overflow: hidden;
@@ -2512,7 +2517,8 @@ textarea {
   }
 
   .header-actions,
-  .form-actions {
+  .form-actions,
+  .auth-secondary-actions {
     grid-template-columns: 1fr;
   }
 

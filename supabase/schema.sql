@@ -12,6 +12,10 @@ create table if not exists public.posts (
 
 alter table public.posts enable row level security;
 
+grant usage on schema public to anon, authenticated;
+grant select on public.posts to anon, authenticated;
+grant insert on public.posts to authenticated;
+
 drop policy if exists "Anyone can read approved posts" on public.posts;
 drop policy if exists "Users can read their own posts" on public.posts;
 drop policy if exists "Logged in users can create pending posts" on public.posts;
