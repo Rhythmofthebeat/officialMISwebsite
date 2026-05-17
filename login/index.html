@@ -17,33 +17,36 @@
           <div class="content-stack login-copy">
             <p class="eyebrow">Log In</p>
             <h1 id="login-heading" class="compact-page-title">Access your community board.</h1>
-            <p class="lead">Log in with your username or email. New accounts need both an email and username.</p>
+            <p class="lead">Log in with your username or email, or create an account with your profile details.</p>
           </div>
           <form class="contact-card form-grid" data-login-form>
-            <div class="form-row">
+            <div class="auth-mode-toggle" role="tablist" aria-label="Account action">
+              <button class="auth-mode-button is-active" type="button" data-auth-mode="signin" role="tab" aria-selected="true">Log In</button>
+              <button class="auth-mode-button" type="button" data-auth-mode="signup" role="tab" aria-selected="false">Create Account</button>
+            </div>
+
+            <div class="form-row" data-auth-field="signin">
               <label for="login-identifier">Username or Email</label>
               <input id="login-identifier" name="identifier" autocomplete="username" placeholder="username or name@example.com">
             </div>
-            <div class="form-row">
-              <label for="login-email">Email for New Accounts</label>
+            <div class="form-row" data-auth-field="signup" hidden>
+              <label for="login-email">Email</label>
               <input id="login-email" name="email" type="email" autocomplete="email" placeholder="name@example.com">
             </div>
-            <div class="form-row">
-              <label for="login-username">Username for New Accounts</label>
+            <div class="form-row" data-auth-field="signup" hidden>
+              <label for="login-username">Username</label>
               <input id="login-username" name="username" autocomplete="username" placeholder="yourname">
             </div>
             <div class="form-row">
               <label for="login-password">Password</label>
               <input id="login-password" name="password" type="password" autocomplete="current-password" minlength="6" required>
             </div>
-            <div class="form-row">
+            <div class="form-row" data-auth-field="signup" hidden>
               <label for="login-school-chapter">School or Chapter</label>
               <input id="login-school-chapter" name="school_chapter" autocomplete="organization" placeholder="Woodward Academy">
             </div>
-            <div class="form-actions">
-              <button class="button" type="submit" name="action" value="signin">Log In</button>
-              <button class="button outline" type="submit" name="action" value="signup">Create Account</button>
-            </div>
+            <input type="hidden" name="action" value="signin" data-auth-action>
+            <button class="button" type="submit" data-auth-submit>Log In</button>
             <div class="form-actions auth-secondary-actions">
               <button class="text-button" type="button" data-reset-password>Forgot Password?</button>
               <button class="text-button" type="button" data-update-password hidden>Update Password</button>

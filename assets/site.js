@@ -624,6 +624,34 @@ async function setupLogin() {
   const logoutButton = form.querySelector("[data-logout]");
   const resetButton = form.querySelector("[data-reset-password]");
   const updatePasswordButton = form.querySelector("[data-update-password]");
+  const actionInput = form.querySelector("[data-auth-action]");
+  const submitButton = form.querySelector("[data-auth-submit]");
+  const modeButtons = [...form.querySelectorAll("[data-auth-mode]")];
+  const modeFields = [...form.querySelectorAll("[data-auth-field]")];
+
+  const setAuthMode = (mode) => {
+    actionInput.value = mode;
+    modeButtons.forEach((button) => {
+      const active = button.dataset.authMode === mode;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-selected", String(active));
+    });
+    modeFields.forEach((field) => {
+      const visible = field.dataset.authField === mode;
+      field.hidden = !visible;
+      field.querySelectorAll("input, select, textarea").forEach((input) => {
+        input.disabled = !visible;
+      });
+    });
+    submitButton.textContent = mode === "signup" ? "Create Account" : "Log In";
+    getField(form, "password").setAttribute("autocomplete", mode === "signup" ? "new-password" : "current-password");
+  };
+
+  modeButtons.forEach((button) => {
+    button.addEventListener("click", () => setAuthMode(button.dataset.authMode));
+  });
+
+  setAuthMode("signin");
   const client = await getSupabaseClient();
   if (!client) {
     setFormNote(note, "Supabase is not configured yet. Add the Vercel environment variables, redeploy, then login will work.", true);
@@ -719,7 +747,7 @@ async function setupLogin() {
       return;
     }
 
-    const action = event.submitter?.value || "signin";
+    const action = actionInput.value || "signin";
     const identifier = String(getField(form, "identifier").value || "").trim();
     const email = String(getField(form, "email").value || "").trim().toLowerCase();
     const username = normalizeUsername(getField(form, "username").value);
