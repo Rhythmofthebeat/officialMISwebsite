@@ -12,11 +12,11 @@ const navigation = [
     items: [
       { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
       { label: "Partners", href: "/#partners" },
-      { label: "Community Board", href: "/community" },
       { label: "Settings", href: "/settings" },
       { label: "Contact Us", href: "/contact" }
     ]
   },
+  { label: "Community Board", href: "/community" },
   {
     label: "Initiatives",
     items: [{ label: "Community Inclusivity", href: "/initiatives/community-inclusivity" }]
