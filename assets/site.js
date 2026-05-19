@@ -11,7 +11,7 @@ const navigation = [
     label: "Get Involved",
     items: [
       { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
-      { label: "Partners", href: "/#partners" },
+      { label: "Sponsors + Partners", href: "/#partners" },
       { label: "Settings", href: "/settings" },
       { label: "Contact Us", href: "/contact" }
     ]
