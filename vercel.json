@@ -1,20 +1,18 @@
 {
-    "cleanUrls": true,
-    "trailingSlash": false,
-    "redirects": [
-          {
-                  "source": "/mission",
-                  "destination": "/about/mission",
-                  "permanent": true
-          },
-          {
-                  "source": "/team",
-                  "destination": "/about/team",
-                  "permanent": true
-          },
-          {
-                  "source": "/contact-us",
-                  "destination": "/contact",
-                  "permanent": true
-          }
-    ]
+"cleanUrls":true,
+"trailingSlash":false,
+    
+"redirects":
+[{
+    "source":"/mission",
+    "destination":"/about/mission",
+    "permanent":true},
+    {"source":"/team",
+    "destination":"/about/team",
+    "permanent":true},
+    {
+    "source":"/contact-us",
+    "destination":"/contact",
+    "permanent":true}
+]
+}
