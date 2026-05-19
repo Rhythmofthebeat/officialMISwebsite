@@ -1,7 +1,11 @@
 {
-    "redirects": [
-          { "source": "/mission", "destination": "/about/mission", "permanent": false },
-          { "source": "/team", "destination": "/about/team", "permanent": false },
-          { "source": "/contact-us", "destination": "/contact", "permanent": false }
-    ]
+  "outputDirectory": ".",
+  "buildCommand": null,
+  "installCommand": null,
+  "framework": null,
+  "redirects": [
+    { "source": "/mission", "destination": "/about/mission", "permanent": false },
+    { "source": "/team", "destination": "/about/team", "permanent": false },
+    { "source": "/contact-us", "destination": "/contact", "permanent": false }
+  ]
 }
