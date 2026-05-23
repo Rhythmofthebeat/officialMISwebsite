@@ -2168,6 +2168,11 @@ textarea {
   line-height: 1;
 }
 
+.priority-card h2.submission-heading {
+  font-size: var(--text-lg);
+  line-height: 1.25;
+}
+
 .compact-lead {
   max-width: 780px;
   margin-bottom: 0;
