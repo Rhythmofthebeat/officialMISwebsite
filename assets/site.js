@@ -28,6 +28,7 @@ const navigation = [
       { label: "Event Calendar", href: "/events" }
     ]
   },
+  { label: "Archive", href: "/archive" },
   {
     label: "Resources",
     items: [
@@ -152,6 +153,7 @@ function renderFooter() {
             <li><a href="/about">About Us</a></li>
             <li><a href="/hackathon">MISHacks Episode 1</a></li>
             <li><a href="/events">Event Calendar</a></li>
+            <li><a href="/archive">Archive</a></li>
             <li><a href="/community">Community Board</a></li>
             <li><a href="/settings">Settings</a></li>
             <li><a href="/get-involved/start-chapter">Starting a Chapter</a></li>
@@ -267,6 +269,60 @@ function setupForms() {
   });
 }
 
+function setupPicturebookCarousels() {
+  document.querySelectorAll("[data-picturebook-carousel]").forEach((carousel) => {
+    const track = carousel.querySelector("[data-carousel-track]");
+    const slides = [...carousel.querySelectorAll("[data-carousel-slide]")];
+    const prev = carousel.querySelector("[data-carousel-prev]");
+    const next = carousel.querySelector("[data-carousel-next]");
+    const current = carousel.querySelector("[data-carousel-current]");
+    const total = carousel.querySelector("[data-carousel-total]");
+
+    if (!track || slides.length === 0) return;
+
+    let activeIndex = 0;
+    if (total) total.textContent = String(slides.length);
+
+    const updateState = () => {
+      const trackBounds = track.getBoundingClientRect();
+      const trackCenter = trackBounds.left + trackBounds.width / 2;
+      activeIndex = slides.reduce((nearest, slide, index) => {
+        const bounds = slide.getBoundingClientRect();
+        const distance = Math.abs(bounds.left + bounds.width / 2 - trackCenter);
+        return distance < nearest.distance ? { index, distance } : nearest;
+      }, { index: activeIndex, distance: Infinity }).index;
+      if (current) current.textContent = String(activeIndex + 1);
+      if (prev) prev.disabled = activeIndex === 0;
+      if (next) next.disabled = activeIndex === slides.length - 1;
+    };
+
+    const setActive = (index, behavior = "smooth") => {
+      activeIndex = Math.max(0, Math.min(index, slides.length - 1));
+      slides[activeIndex].scrollIntoView({ behavior, block: "nearest", inline: "center" });
+      updateState();
+    };
+
+    prev?.addEventListener("click", () => setActive(activeIndex - 1));
+    next?.addEventListener("click", () => setActive(activeIndex + 1));
+
+    track.addEventListener("keydown", (event) => {
+      if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+      event.preventDefault();
+      setActive(activeIndex + (event.key === "ArrowRight" ? 1 : -1));
+    });
+
+    track.addEventListener("scroll", () => {
+      window.requestAnimationFrame(updateState);
+    }, { passive: true });
+
+    window.addEventListener("resize", () => {
+      setActive(activeIndex, "auto");
+    });
+
+    updateState();
+  });
+}
+
 function setupTheme() {
   const toggle = document.querySelector("[data-theme-toggle]");
   const root = document.documentElement;
@@ -361,6 +417,7 @@ function setupReveals() {
     ".contact-card",
     ".chart-panel",
     ".article-aside",
+    ".picturebook-carousel",
     ".article-body > *",
     ".two-column > *",
     ".contact-layout > *"
@@ -1074,6 +1131,7 @@ setupFavicon();
 setupTheme();
 setupNavigation();
 setupForms();
+setupPicturebookCarousels();
 setupAuthAction();
 setupLogin();
 setupCommunityBoard();
