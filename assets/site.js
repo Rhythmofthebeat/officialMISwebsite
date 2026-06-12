@@ -11,6 +11,7 @@ const navigation = [
     label: "Get Involved",
     items: [
       { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
+      { label: "Chapters", href: "/chapters" },
       { label: "Sponsors + Partners", href: "/#partners" },
       { label: "Settings", href: "/settings" },
       { label: "Contact Us", href: "/contact" }
@@ -157,6 +158,7 @@ function renderFooter() {
             <li><a href="/community">Community Board</a></li>
             <li><a href="/settings">Settings</a></li>
             <li><a href="/get-involved/start-chapter">Starting a Chapter</a></li>
+            <li><a href="/chapters">Chapters</a></li>
           </ul>
         </nav>
         <form class="newsletter" data-enhanced-form data-success="Thank you for subscribing." aria-label="Subscribe to our newsletter">
@@ -415,6 +417,7 @@ function setupReveals() {
     ".stat-card",
     ".step-card",
     ".contact-card",
+    ".chapter-card",
     ".chart-panel",
     ".article-aside",
     ".picturebook-carousel",
