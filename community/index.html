@@ -55,7 +55,26 @@
               <p class="eyebrow">Feed</p>
               <h2 id="community-feed-heading">Latest updates.</h2>
             </div>
-            <div class="community-posts" data-community-posts></div>
+            <div class="community-hub" data-community-hub>
+              <div class="hub-sidebar">
+                <div class="search-row">
+                  <label for="thread-search" class="visually-hidden">Search threads</label>
+                  <input id="thread-search" data-thread-search placeholder="Search discussions...">
+                </div>
+                <div class="hub-categories" data-categories aria-label="Categories"></div>
+              </div>
+              <div class="hub-main">
+                <div class="hub-featured">
+                  <h3>Featured</h3>
+                  <article class="thread-card featured">
+                    <h4><a href="#">Welcome to the Community</a></h4>
+                    <p class="excerpt">Introduce your chapter and share what you're building.</p>
+                  </article>
+                </div>
+                <div class="hub-threads" data-threads aria-live="polite"></div>
+                <div class="community-posts" data-community-posts hidden></div>
+              </div>
+            </div>
           </section>
         </div>
       </section>

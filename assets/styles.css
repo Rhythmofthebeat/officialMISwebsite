@@ -184,7 +184,8 @@ a {
 
 .section {
   position: relative;
-  padding-block: clamp(var(--space-20), 10vw, var(--space-32));
+  /* Slightly condensed vertical spacing site-wide for a tighter layout */
+  padding-block: clamp(var(--space-12), 7vw, var(--space-24));
 }
 
 .section-tight {
@@ -271,6 +272,26 @@ p {
   max-width: 720px;
   font-size: var(--text-lg);
   line-height: 1.55;
+}
+
+/* Condensed styles to make cards and content more compact and aesthetic */
+.feature-card {
+  padding: clamp(var(--space-4), 2.5vw, var(--space-6));
+  gap: var(--space-4);
+}
+
+.card-body,
+.profile-meta {
+  gap: var(--space-2);
+}
+
+.photo-panel img {
+  aspect-ratio: 4 / 3;
+}
+
+/* Slightly smaller hero lead to reduce vertical space */
+.lead {
+  max-width: 640px;
 }
 
 .site-header {
@@ -803,8 +824,64 @@ p {
   display: grid;
   gap: var(--space-5);
   min-height: 100%;
-  padding: clamp(var(--space-6), 4vw, var(--space-10));
+  padding: clamp(var(--space-5), 3vw, var(--space-8));
   overflow: hidden;
+}
+
+/* Partner grid and compact partner card */
+.partner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+}
+
+.partner-card {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, var(--color-surface), var(--color-surface-2));
+  border: 1px solid var(--color-border);
+  transition: transform var(--transition-interactive), box-shadow var(--transition-interactive);
+}
+
+.partner-card.compact h3 {
+  margin: 0 0 4px 0;
+  font-size: var(--text-sm);
+}
+
+.partner-card.compact p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.94rem;
+}
+
+.partner-card .partner-icon {
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--color-primary);
+}
+
+.partner-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Form-grid adjustments for compact partner form */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.form-grid .full { grid-column: 1 / -1; }
+
+@media (max-width: 880px) {
+  .form-grid { grid-template-columns: 1fr; }
 }
 
 .feature-card-large {
@@ -857,6 +934,43 @@ p {
   grid-template-columns: minmax(0, 1.02fr) minmax(280px, 0.98fr);
   gap: clamp(var(--space-8), 6vw, var(--space-16));
   align-items: center;
+}
+
+/* Centered section header variant (used for benefits) */
+.section-header.centered {
+  text-align: center;
+}
+.section-header.centered .lead {
+  max-width: 760px;
+  margin: 0.5rem auto 0;
+  color: var(--color-text-muted);
+}
+
+/* Partner inquiry: center the two-column form + aside within a constrained width */
+.partner-inquiry {
+  max-width: 980px;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+.partner-inquiry .two-column {
+  grid-template-columns: 1fr 360px;
+  gap: 2rem;
+  align-items: start;
+}
+.partner-inquiry .aside-card,
+.partner-inquiry aside.contact-card {
+  align-self: start;
+}
+
+@media (max-width: 760px) {
+  .partner-inquiry .two-column {
+    grid-template-columns: 1fr;
+  }
+  .partner-inquiry .aside-card,
+  .partner-inquiry aside.contact-card {
+    order: -1;
+    margin-bottom: 0.75rem;
+  }
 }
 
 .image-panel {

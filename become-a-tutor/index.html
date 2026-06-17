@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Become a Tutor | Minorities in STEM</title>
+    <meta name="description" content="Apply to become a volunteer tutor with Minorities in STEM.">
+    <link rel="stylesheet" href="/assets/styles.css">
+    <script src="/assets/site.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div id="site-header"></div>
+    <main id="main">
+      <section class="hero page-hero" aria-labelledby="tutor-hero">
+        <div class="hero-content">
+          <p class="eyebrow">Tutor</p>
+          <h1 id="tutor-hero">Become a Tutor</h1>
+          <p class="lead">Join our tutor network — help students with short, focused weekly sessions.</p>
+          <div class="hero-actions">
+            <a class="button" href="#apply">Apply Now</a>
+            <a class="button secondary" href="/volunteer">Volunteer Opportunities</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" aria-labelledby="tutor-requirements">
+        <div class="container two-column">
+          <figure class="photo-panel">
+            <img src="/assets/images/heroimage.avif" alt="Students collaborating during an event">
+            <img src="/assets/images/wavehack.jpeg" alt="Students at WaveHack event">
+            <figcaption>Volunteer tutors mentor students at events, hackathons, and chapter meetings.</figcaption>
+          </figure>
+          <div class="content-stack">
+            <div class="section-header">
+              <p class="eyebrow">Requirements</p>
+              <h2 id="tutor-requirements">Who we're looking for</h2>
+            </div>
+            <p class="lead">Volunteers who can commit 2–4 hours weekly to mentor students in STEM subjects. University students and experienced high‑school tutors welcome.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section-alt" id="apply" aria-labelledby="tutor-apply">
+        <div class="container">
+          <div class="section-header">
+            <p class="eyebrow">Application</p>
+            <h2 id="tutor-apply">Tutor application</h2>
+          </div>
+
+          <div class="contact-layout" data-tutor-app>
+            <form class="contact-card" method="post" enctype="multipart/form-data">
+              <progress value="0" max="100" data-progress aria-hidden="true"></progress>
+
+              <div data-step>
+                <h3>Personal</h3>
+                <div class="form-row"><label for="name">Name</label><input id="name" name="name" required></div>
+                <div class="form-row"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
+                <div class="form-row"><label for="school">School / Org (optional)</label><input id="school" name="school"></div>
+                <div class="action-row"><button data-next class="button">Next</button></div>
+              </div>
+
+              <div data-step hidden>
+                <h3>Subjects & Experience</h3>
+                <div class="form-row"><label for="subjects">Subjects</label><input id="subjects" name="subjects" placeholder="e.g., Math, Python"></div>
+                <div class="form-row"><label for="experience">Experience summary</label><textarea id="experience" name="experience_summary" rows="5" placeholder="Tutoring, teaching, or project experience"></textarea></div>
+                <div class="action-row">
+                  <button data-prev class="button outline">Back</button>
+                  <button data-next class="button">Next</button>
+                </div>
+              </div>
+
+              <div data-step hidden>
+                <h3>Availability & Submit</h3>
+                <div class="form-row"><label for="availability">Weekly availability</label><input id="availability" name="availability" placeholder="e.g., Weeknights 6-9pm"></div>
+                <div class="form-row"><label for="format">Preferred format</label><select id="format" name="preferred_format"><option>Virtual</option><option>In-person</option><option>Either</option></select></div>
+                <div class="form-row"><label for="why">Short note (why tutor?)</label><textarea id="why" name="why" rows="3" required></textarea></div>
+                <div class="form-row"><label for="resume">Resume (optional)</label><input id="resume" name="resume" type="file" accept="application/pdf"></div>
+                <div class="action-row">
+                  <button data-prev class="button outline">Back</button>
+                  <button type="submit" class="button">Submit</button>
+                </div>
+                <p class="form-note" role="status" aria-live="polite"></p>
+              </div>
+            </form>
+
+            <aside class="contact-card">
+              <h3>Quick facts</h3>
+              <p>Typical commitment: 2–4 hours weekly. Roles are flexible — remote or in-person.</p>
+            </aside>
+          </div>
+        </div>
+      </section>
+    </main>
+    <div id="site-footer"></div>
+  </body>
+</html>

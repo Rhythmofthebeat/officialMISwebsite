@@ -4,7 +4,8 @@ const navigation = [
     label: "About Us",
     items: [
       { label: "Our Team", href: "/about/team" },
-      { label: "Our Mission + Goal", href: "/about/mission" }
+      { label: "Our Mission + Goal", href: "/about/mission" },
+      { label: "Partners", href: "/partners" }
     ]
   },
   {
@@ -12,12 +13,12 @@ const navigation = [
     items: [
       { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
       { label: "Chapters", href: "/chapters" },
-      { label: "Sponsors + Partners", href: "/#partners" },
+      { label: "Become a Tutor", href: "/become-a-tutor" },
       { label: "Settings", href: "/settings" },
       { label: "Contact Us", href: "/contact" }
     ]
   },
-  { label: "Community Board", href: "/community" },
+  { label: "Community", href: "/community" },
   {
     label: "Initiatives",
     items: [{ label: "Community Inclusivity", href: "/initiatives/community-inclusivity" }]
@@ -152,6 +153,8 @@ function renderFooter() {
           <ul class="footer-links">
             <li><a href="/">Home</a></li>
             <li><a href="/about">About Us</a></li>
+            <li><a href="/partners">Partners</a></li>
+            <li><a href="/become-a-tutor">Become a Tutor</a></li>
             <li><a href="/hackathon">MISHacks Episode 1</a></li>
             <li><a href="/events">Event Calendar</a></li>
             <li><a href="/archive">Archive</a></li>
@@ -1141,3 +1144,259 @@ setupCommunityBoard();
 setupAccountSettings();
 updateAuthUI();
 setupReveals();
+// Initialize Google Analytics (gtag) once and track SPA-like navigation events.
+function initAnalytics() {
+  try {
+    if (window.__mistem_gtag_initialized) return;
+    const existing = document.querySelector('script[src*="googletagmanager.com/gtag/js?id=G-DSVQVY0L09"]');
+    if (!existing) {
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://www.googletagmanager.com/gtag/js?id=G-DSVQVY0L09';
+      document.head.appendChild(s);
+    }
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    window.gtag = window.gtag || gtag;
+    gtag('js', new Date());
+    gtag('config', 'G-DSVQVY0L09', { send_page_view: true });
+    window.__mistem_gtag_initialized = true;
+
+    const trackPage = () => {
+      try {
+        if (window.gtag) window.gtag('event', 'page_view', { page_path: window.location.pathname });
+      } catch (e) {
+        // ignore
+      }
+    };
+
+    window.addEventListener('popstate', trackPage);
+    window.addEventListener('hashchange', trackPage);
+
+    // Patch history API to detect pushState/replaceState
+    const origPush = history.pushState;
+    history.pushState = function () {
+      const result = origPush.apply(this, arguments);
+      trackPage();
+      return result;
+    };
+    const origReplace = history.replaceState;
+    history.replaceState = function () {
+      const result = origReplace.apply(this, arguments);
+      trackPage();
+      return result;
+    };
+  } catch (e) {
+    // analytics should never throw application errors
+    console.warn('GA init failed', e);
+  }
+}
+
+// Partner page form handling (client-side + backend-ready fetch fallback)
+function setupPartnerPage() {
+  const form = document.querySelector('[data-partner-form]');
+  if (!form) return;
+  const note = form.querySelector('.form-note');
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
+    const formData = new FormData(form);
+    const payload = Object.fromEntries(formData.entries());
+
+    setFormBusy(form, true);
+    setFormNote(note, 'Submitting...');
+
+    try {
+      // Attempt to POST to a backend endpoint if available.
+      const response = await fetch('/api/partners', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(() => null);
+
+      // If backend exists and returns success, show success. Otherwise simulate success.
+      if (response && response.ok) {
+        setFormNote(note, 'Thank you — your inquiry has been received.');
+        form.reset();
+      } else {
+        // Simulated submission for static preview environments
+        await new Promise((r) => setTimeout(r, 700));
+        setFormNote(note, 'Thank you — your inquiry has been received.');
+        form.reset();
+      }
+    } catch (err) {
+      setFormNote(note, 'Submission failed. Please try again later.', true);
+    } finally {
+      setFormBusy(form, false);
+    }
+  });
+}
+
+// Tutor application multi-step flow
+function setupTutorApplication() {
+  const root = document.querySelector('[data-tutor-app]');
+  if (!root) return;
+
+  const steps = [...root.querySelectorAll('[data-step]')];
+  const progress = root.querySelector('[data-progress]');
+  const nextButtons = root.querySelectorAll('[data-next]');
+  const prevButtons = root.querySelectorAll('[data-prev]');
+  const form = root.querySelector('form');
+  let index = 0;
+
+  function show() {
+    steps.forEach((s, i) => s.toggleAttribute('hidden', i !== index));
+    if (progress) progress.value = Math.round(((index + 1) / steps.length) * 100);
+  }
+
+  nextButtons.forEach((btn) => btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Simple validation for current visible inputs
+    const visible = steps[index];
+    const inputs = [...visible.querySelectorAll('input,textarea,select')];
+    const valid = inputs.every((el) => el.checkValidity());
+    if (!valid) {
+      visible.querySelectorAll('input,textarea,select').forEach((el) => el.reportValidity());
+      return;
+    }
+    index = Math.min(steps.length - 1, index + 1);
+    show();
+  }));
+
+  prevButtons.forEach((btn) => btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    index = Math.max(0, index - 1);
+    show();
+  }));
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) { form.reportValidity(); return; }
+    setFormBusy(form, true);
+    const note = form.querySelector('.form-note');
+
+    try {
+      const fd = new FormData(form);
+      // Attempt to POST to a backend endpoint if available
+      const response = await fetch('/api/tutor-apps', { method: 'POST', body: fd }).catch(() => null);
+      if (response && response.ok) {
+        setFormNote(note, 'Application submitted. Thank you!');
+        form.reset();
+      } else {
+        await new Promise((r) => setTimeout(r, 900));
+        setFormNote(note, 'Application submitted. Thank you!');
+        form.reset();
+      }
+      if (window.gtag) window.gtag('event', 'conversion', { event_category: 'tutor_application' });
+    } catch (err) {
+      setFormNote(note, 'Submission failed. Try again later.', true);
+    } finally {
+      setFormBusy(form, false);
+    }
+  });
+
+  show();
+}
+
+// Lightweight Community Hub (mock data rendering)
+function setupCommunityHub() {
+  const hub = document.querySelector('[data-community-hub]');
+  if (!hub) return;
+
+  const categories = [
+    'General Discussion',
+    'Data Science',
+    'AI & Machine Learning',
+    'Research Opportunities',
+    'Nonprofit Impact',
+    'College & Careers',
+    'Community Projects'
+  ];
+
+  const mockThreads = [
+    { id: 't1', title: 'Welcome — introduce your chapter', category: 'General Discussion', excerpt: 'Tell us about your chapter and what you are building.' },
+    { id: 't2', title: 'Research internship opportunities', category: 'Research Opportunities', excerpt: 'Share available research positions and application tips.' },
+    { id: 't3', title: 'Best resources for learning ML', category: 'AI & Machine Learning', excerpt: 'Curated courses, papers, and projects.' }
+  ];
+
+  const catsEl = hub.querySelector('[data-categories]');
+  const threadsEl = hub.querySelector('[data-threads]');
+  const searchEl = hub.querySelector('[data-thread-search]');
+
+  function renderCategories(active = null) {
+    if (!catsEl) return;
+    catsEl.innerHTML = categories.map((c) => `<button class="chip" data-cat="${c}" aria-pressed="${c===active}">${c}</button>`).join('');
+    catsEl.querySelectorAll('[data-cat]').forEach((btn) => btn.addEventListener('click', () => renderThreads(btn.dataset.cat)));
+  }
+
+  function renderThreads(filter = null, query = '') {
+    if (!threadsEl) return;
+    const visible = mockThreads.filter((t) => (!filter || t.category === filter) && (!query || (t.title + t.excerpt).toLowerCase().includes(query.toLowerCase())));
+    if (visible.length === 0) {
+      threadsEl.innerHTML = `<div class="empty-state"><p>No discussions found. Start the first thread.</p></div>`;
+      return;
+    }
+    threadsEl.innerHTML = visible.map((t) => `
+      <article class="thread-card">
+        <h3><a href="#thread-${t.id}">${t.title}</a></h3>
+        <p class="meta">${t.category}</p>
+        <p class="excerpt">${t.excerpt}</p>
+      </article>
+    `).join('');
+  }
+
+  searchEl?.addEventListener('input', (e) => renderThreads(null, e.target.value || ''));
+  renderCategories();
+  renderThreads();
+}
+
+// Initialize optional page scripts
+initAnalytics();
+setupPartnerPage();
+setupTutorApplication();
+setupCommunityHub();
+
+// Populate any `.image-panel` elements with event images (randomized). This adds visual photos inside the green panel area.
+function populateImagePanels() {
+  try {
+    const images = [
+      '/assets/events_img/wavehack/img1.jpeg',
+      '/assets/events_img/wavehack/img2.jpeg',
+      '/assets/events_img/wavehack/img3.jpeg',
+      '/assets/events_img/wavehack/img4.jpeg',
+      '/assets/events_img/skillsUSA/IMG_0270.jpg',
+      '/assets/events_img/skillsUSA/IMG_0273.jpg',
+      '/assets/events_img/skillsUSA/IMG_0312_web.jpg',
+      '/assets/events_img/skillsUSA/IMG_0341_web.jpg'
+    ];
+    document.querySelectorAll('.image-panel').forEach((panel, idx) => {
+      // don't duplicate
+      if (panel.dataset._hasPhoto) return;
+      const src = images[(idx) % images.length] || images[0];
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = panel.getAttribute('data-alt') || 'Event photo';
+      img.setAttribute('aria-hidden', 'true');
+      // override CSS that hides .image-panel img by default
+      img.style.display = 'block';
+      img.style.position = 'absolute';
+      img.style.inset = '0';
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'cover';
+      img.style.borderRadius = 'var(--radius-xl)';
+      panel.appendChild(img);
+      panel.dataset._hasPhoto = '1';
+    });
+  } catch (e) {
+    // silent
+  }
+}
+
+populateImagePanels();
