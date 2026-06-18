@@ -14,7 +14,6 @@ const navigation = [
       { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
       { label: "Chapters", href: "/chapters" },
       { label: "Become a Tutor", href: "/become-a-tutor" },
-      { label: "Settings", href: "/settings" },
       { label: "Contact Us", href: "/contact" }
     ]
   },
@@ -118,6 +117,7 @@ function renderHeader() {
           </div>
         </nav>
         <div class="header-top-actions">
+          <a class="settings-link" href="/settings">Settings</a>
           <button class="theme-toggle" type="button" aria-label="Switch theme" data-theme-toggle></button>
           <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="primary-navigation">
             <span class="menu-toggle-lines" aria-hidden="true"></span>

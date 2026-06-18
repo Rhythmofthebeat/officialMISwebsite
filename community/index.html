@@ -12,7 +12,7 @@
     <a class="skip-link" href="#main">Skip to main content</a>
     <div id="site-header"></div>
     <main id="main">
-      <section class="hero page-hero">
+      <section class="hero page-hero" style="--page-hero-image: url('/assets/events_img/skillsUSA/IMG_0273.jpg')">
         <div class="hero-content">
           <p class="eyebrow">Community</p>
           <h1>Chapter updates, wins, and opportunities.</h1>
@@ -26,37 +26,45 @@
 
       <section class="section section-alt" id="post-update" aria-labelledby="post-update-heading">
         <div class="container community-layout">
-          <form class="contact-card form-grid" data-community-form>
-            <p class="eyebrow">Share</p>
-            <h2 id="post-update-heading">Post a community update.</h2>
-            <p class="form-note static-note">Posts publish immediately.</p>
-            <div class="form-row">
-              <label for="post-title">Title</label>
-              <input id="post-title" name="title" required maxlength="90" placeholder="Robotics workshop recap">
+          <form class="contact-card community-compose" data-community-form>
+            <div class="section-header compact-header">
+              <p class="eyebrow">Share</p>
+              <h2 id="post-update-heading">Post an update</h2>
+              <p>Keep it short, useful, and easy for other chapters to scan.</p>
             </div>
-            <div class="form-row">
-              <label for="post-type">Type</label>
-              <select id="post-type" name="type" required>
-                <option value="Chapter Update">Chapter Update</option>
-                <option value="Opportunity">Opportunity</option>
-                <option value="Project Win">Project Win</option>
-                <option value="Question">Question</option>
-              </select>
+            <div class="community-compose-grid">
+              <div class="form-row">
+                <label for="post-title">Title</label>
+                <input id="post-title" name="title" required maxlength="90" placeholder="Robotics workshop recap">
+              </div>
+              <div class="form-row">
+                <label for="post-type">Type</label>
+                <select id="post-type" name="type" required>
+                  <option value="Chapter Update">Chapter Update</option>
+                  <option value="Opportunity">Opportunity</option>
+                  <option value="Project Win">Project Win</option>
+                  <option value="Question">Question</option>
+                </select>
+              </div>
             </div>
             <div class="form-row">
               <label for="post-body">Post</label>
               <textarea id="post-body" name="body" required maxlength="700" placeholder="What happened, who was involved, and what should people know?"></textarea>
             </div>
-            <button class="button" type="submit">Publish Update</button>
+            <div class="community-submit-row">
+              <button class="button" type="submit">Publish Update</button>
+              <p class="form-note static-note">Posts publish immediately.</p>
+            </div>
             <p class="form-note" role="status" aria-live="polite"></p>
           </form>
+
           <section class="community-feed" aria-labelledby="community-feed-heading">
             <div class="section-header compact-header">
               <p class="eyebrow">Feed</p>
-              <h2 id="community-feed-heading">Latest updates.</h2>
+              <h2 id="community-feed-heading">Latest updates</h2>
             </div>
             <div class="community-hub" data-community-hub>
-              <div class="hub-sidebar">
+              <div class="hub-tools">
                 <div class="search-row">
                   <label for="thread-search" class="visually-hidden">Search threads</label>
                   <input id="thread-search" data-thread-search placeholder="Search discussions...">
@@ -65,8 +73,8 @@
               </div>
               <div class="hub-main">
                 <div class="hub-featured">
-                  <h3>Featured</h3>
                   <article class="thread-card featured">
+                    <p class="eyebrow">Featured</p>
                     <h4><a href="#">Welcome to the Community</a></h4>
                     <p class="excerpt">Introduce your chapter and share what you're building.</p>
                   </article>
