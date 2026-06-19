@@ -1,7 +1,7 @@
 const navigation = [
   { label: "Home", href: "/" },
   {
-    label: "About Us",
+    label: "About",
     items: [
       { label: "Our Team", href: "/about/team" },
       { label: "Our Mission + Goal", href: "/about/mission" },
@@ -9,7 +9,7 @@ const navigation = [
     ]
   },
   {
-    label: "Get Involved",
+    label: "Opportunities",
     items: [
       { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
       { label: "Chapters", href: "/chapters" },
@@ -19,7 +19,7 @@ const navigation = [
   },
   { label: "Community", href: "/community" },
   {
-    label: "Initiatives",
+    label: "Programs",
     items: [{ label: "Community Inclusivity", href: "/initiatives/community-inclusivity" }]
   },
   {
