@@ -56,6 +56,27 @@ Then open:
 http://127.0.0.1:4174
 ```
 
+## Leaflet Chapter Map
+
+The chapters page uses Leaflet with OpenStreetMap tiles. It does not require an API key, paid map account, or billing-enabled service.
+
+- Next App Router wrapper: `src/components/ChapterMap.tsx`
+- Client-only React Leaflet map: `src/components/ChapterMapClient.tsx`
+- Chapter data: `src/data/chapters.ts`
+- Static-site fallback modules: `assets/leafletChapterMap.js` and `assets/chapters.js`
+
+For a Next.js App Router page, import the SSR-disabled wrapper:
+
+```tsx
+import ChapterMap from "@/src/components/ChapterMap";
+
+export default function ChaptersPage() {
+  return <ChapterMap />;
+}
+```
+
+The wrapper uses `next/dynamic` with `ssr: false` so Leaflet only runs in the browser. The client component imports `leaflet/dist/leaflet.css`, uses OpenStreetMap tiles, and defines a custom marker icon so Next.js does not hit Leaflet's default marker asset path issue.
+
 ## AI x STEM Hackathon Subdomain
 
 The MISHacks Episode 1 page is available at `/hackathon/`, with `/ai-x-stem-hackathon/` redirecting there.
@@ -75,6 +96,9 @@ For a project URL like `https://username.github.io/MIS_website/`, root-relative 
 - `index.html`: Homepage.
 - `assets/styles.css`: Global styles, responsive layout, dark mode colors, cards, hero image positioning, and page sections.
 - `assets/site.js`: Shared navigation, footer, mobile menu, dark mode persistence, dropdown behavior, scroll effects, and counters.
+- `src/data/chapters.ts`: Chapter map locations and descriptions.
+- `src/components/ChapterMap.tsx`: SSR-disabled Next.js App Router map wrapper.
+- `src/components/ChapterMapClient.tsx`: Client-only React Leaflet chapter map.
 - `assets/images/`: Common image folder for the logo, favicon, hero image, team photos, and chapter photos.
 - `server.mjs`: Local static server with clean route support.
 

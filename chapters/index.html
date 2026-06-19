@@ -7,6 +7,7 @@
     <meta name="description" content="Explore Minorities in STEM chapters and the student leaders building them around the world.">
     <link rel="stylesheet" href="/assets/styles.css">
     <script src="/assets/site.js" defer></script>
+    <script type="module" src="/assets/leafletChapterMap.js"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
@@ -24,6 +25,31 @@
         </div>
       </section>
 
+      <section class="section section-blue" aria-labelledby="chapter-map-heading">
+        <div class="container">
+          <div class="section-header">
+            <p class="eyebrow">Chapter Map</p>
+            <h2 id="chapter-map-heading">Where our chapters are building.</h2>
+            <p>Explore current Minorities in STEM chapters across the United States, Africa, Europe, the Middle East, and South Asia.</p>
+          </div>
+          <div class="chapter-map-layout">
+            <div class="chapter-map-card">
+              <div class="leaflet-chapter-map" data-leaflet-chapter-map aria-label="Interactive OpenStreetMap map of current Minorities in STEM chapter locations">
+                <div class="map-empty-state">
+                  <p>Loading chapter map...</p>
+                </div>
+              </div>
+              <p class="form-note" data-leaflet-map-status aria-live="polite"></p>
+            </div>
+            <aside class="chapter-map-card chapter-map-list-card">
+              <p class="eyebrow">Current Locations</p>
+              <h3>Jump to a chapter</h3>
+              <div class="chapter-map-list" data-leaflet-chapter-map-list aria-label="Current chapters"></div>
+            </aside>
+          </div>
+        </div>
+      </section>
+
       <section class="section section-alt" aria-labelledby="chapter-directory">
         <div class="container">
           <div class="section-header">
@@ -35,7 +61,7 @@
             <article class="chapter-card">
               <h3>Kanga National School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Joedy Foundation</dd></div>
+                <div><dt>Founder</dt><dd>Joedy Foundation</dd></div>
                 <div><dt>Location</dt><dd>Kenya</dd></div>
               </dl>
               <p class="chapter-note">Serving students in grades 10 to 12.</p>
@@ -43,21 +69,21 @@
             <article class="chapter-card">
               <h3>Lambert High School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Ashvik Talluru</dd></div>
+                <div><dt>Founder</dt><dd>Ashvik Talluru</dd></div>
                 <div><dt>Location</dt><dd>Suwanee, Georgia, USA</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Ankara Ataturk High School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Yagiz Soylemez</dd></div>
+                <div><dt>Founder</dt><dd>Yağız Söylemez</dd></div>
                 <div><dt>Location</dt><dd>Ankara, Turkey</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>New Millennium School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Avinash Nambiar</dd></div>
+                <div><dt>Founder</dt><dd>Avinash Nambiar</dd></div>
                 <div><dt>Location</dt><dd>Manama, Bahrain</dd></div>
               </dl>
               <p class="chapter-note">Focused on expanding accessible AI opportunities for youth in Bahrain.</p>
@@ -65,70 +91,70 @@
             <article class="chapter-card">
               <h3>Morehouse College</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Dallas Cook</dd></div>
+                <div><dt>Founder</dt><dd>Dallas Cook</dd></div>
                 <div><dt>Location</dt><dd>Atlanta, Georgia</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Paul Duke STEM High School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Eugene Cha</dd></div>
+                <div><dt>Founder</dt><dd>Eugene Cha</dd></div>
                 <div><dt>Location</dt><dd>Norcross, Georgia, USA</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Special Music School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Mayu Kanai</dd></div>
+                <div><dt>Founder</dt><dd>Mayu Kanai</dd></div>
                 <div><dt>Location</dt><dd>New York, New York</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Auxilium Convent School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Abhiksha Sahoo</dd></div>
+                <div><dt>Founder</dt><dd>Abhiksha Sahoo</dd></div>
                 <div><dt>Location</dt><dd>Bandel, India</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Forward Global School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Zahra Ahmadi</dd></div>
+                <div><dt>Founder</dt><dd>Zahra Ahmadi</dd></div>
                 <div><dt>Location</dt><dd>Hazara Town, Quetta, Pakistan</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>The School of St Jude</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Filemon Richard Mbando</dd></div>
+                <div><dt>Founder</dt><dd>Filemon Richard Mbando</dd></div>
                 <div><dt>Location</dt><dd>Arusha, Tanzania</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Lambert High School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Saahas Nalabhotu</dd></div>
+                <div><dt>Founder</dt><dd>Saahas Nalabhotu</dd></div>
                 <div><dt>Location</dt><dd>Cumming, Georgia</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Lebanon Trail High School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Kushal Anchuri</dd></div>
+                <div><dt>Founder</dt><dd>Kushal Anchuri</dd></div>
                 <div><dt>Location</dt><dd>Plano, Texas, USA</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Salim Habib University</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Amna Noman</dd></div>
+                <div><dt>Founder</dt><dd>Amna Noman</dd></div>
                 <div><dt>Location</dt><dd>Karachi, Pakistan</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Lahore College for Women University</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Kanza Tehreem</dd></div>
+                <div><dt>Founder</dt><dd>Kanza Tehreem</dd></div>
                 <div><dt>Location</dt><dd>Lahore, Punjab, Pakistan</dd></div>
               </dl>
               <p class="chapter-note">Planning campus and online programming with a local team.</p>
@@ -136,7 +162,7 @@
             <article class="chapter-card">
               <h3>Wallington County Grammar School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Abdullah Mubeen</dd></div>
+                <div><dt>Founder</dt><dd>Abdullah Mubeen</dd></div>
                 <div><dt>Location</dt><dd>London, England</dd></div>
               </dl>
               <p class="chapter-note">London director recruiting student leaders across the United Kingdom.</p>
@@ -144,49 +170,49 @@
             <article class="chapter-card">
               <h3>Khyber Medical University</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Muhammad Hasnain</dd></div>
+                <div><dt>Founder</dt><dd>Muhammad Hasnain</dd></div>
                 <div><dt>Location</dt><dd>Peshawar, Pakistan</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Military Institute of Science and Technology</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Sharmin Sultana</dd></div>
+                <div><dt>Founder</dt><dd>Sharmin Sultana</dd></div>
                 <div><dt>Location</dt><dd>Dhaka, Bangladesh</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>University of the Punjab</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Bisma Akhtar</dd></div>
+                <div><dt>Founder</dt><dd>Bisma Akhtar</dd></div>
                 <div><dt>Location</dt><dd>Lahore, Punjab, Pakistan</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Haramaya University</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Sebrin Ayub</dd></div>
+                <div><dt>Founder</dt><dd>Sebrin Ayub</dd></div>
                 <div><dt>Location</dt><dd>Harar, Ethiopia</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Dublin Jerome High School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Piyush Kolekar</dd></div>
+                <div><dt>Founder</dt><dd>Piyush Kolekar</dd></div>
                 <div><dt>Location</dt><dd>Plain City, Ohio, USA</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>Cupertino High School</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Philip Dong</dd></div>
+                <div><dt>Founder</dt><dd>Philip Dong</dd></div>
                 <div><dt>Location</dt><dd>Cupertino, California, USA</dd></div>
               </dl>
             </article>
             <article class="chapter-card">
               <h3>GL Bajaj Group of Institution Mathura</h3>
               <dl class="chapter-meta">
-                <div><dt>Lead</dt><dd>Ayush Sharma</dd></div>
+                <div><dt>Founder</dt><dd>Ayush Sharma</dd></div>
                 <div><dt>Location</dt><dd>Mathura, Uttar Pradesh, India</dd></div>
               </dl>
             </article>
