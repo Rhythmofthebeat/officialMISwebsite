@@ -20,7 +20,10 @@ const navigation = [
   { label: "Community", href: "/community" },
   {
     label: "Programs",
-    items: [{ label: "Community Inclusivity", href: "/initiatives/community-inclusivity" }]
+    items: [
+      { label: "Supported Projects", href: "/projects" },
+      { label: "Community Inclusivity", href: "/initiatives/community-inclusivity" }
+    ]
   },
   {
     label: "Events",
@@ -154,6 +157,7 @@ function renderFooter() {
             <li><a href="/">Home</a></li>
             <li><a href="/about">About Us</a></li>
             <li><a href="/partners">Partners</a></li>
+            <li><a href="/projects">Supported Projects</a></li>
             <li><a href="/become-a-tutor">Become a Tutor</a></li>
             <li><a href="/hackathon">MISHacks Episode 1</a></li>
             <li><a href="/events">Event Calendar</a></li>
