@@ -1133,6 +1133,39 @@ p {
   min-height: 460px;
 }
 
+.impact-gallery {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.impact-photo {
+  grid-column: span 2;
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.impact-photo-wide {
+  grid-column: span 3;
+}
+
+.impact-photo img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.impact-photo figcaption {
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-weight: 900;
+  line-height: 1.25;
+}
+
 .content-stack {
   display: grid;
   gap: var(--space-5);
@@ -2456,6 +2489,14 @@ textarea {
   font-size: var(--text-sm);
   font-weight: 900;
   line-height: 1.18;
+}
+
+.partner-note {
+  max-width: 120px;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 800;
+  line-height: 1.25;
 }
 
 .trusted-card {
@@ -4018,9 +4059,15 @@ textarea {
   }
 
   .worlds-gallery,
+  .impact-gallery,
   .partner-card,
   .media-card {
     grid-template-columns: 1fr;
+  }
+
+  .impact-photo,
+  .impact-photo-wide {
+    grid-column: 1;
   }
 
   .partner-grid.logo-grid,

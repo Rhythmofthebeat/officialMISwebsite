@@ -32,7 +32,13 @@ const navigation = [
       { label: "Event Calendar", href: "/events" }
     ]
   },
-  { label: "Archive", href: "/archive" },
+  {
+    label: "Archive",
+    items: [
+      { label: "Archive", href: "/archive" },
+      { label: "Impact", href: "/impact" }
+    ]
+  },
   {
     label: "Resources",
     items: [
