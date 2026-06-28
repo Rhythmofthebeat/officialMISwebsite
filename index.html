@@ -9,12 +9,28 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "NonProfit",
+        "@type": "Organization",
         "name": "Minorities In STEM",
         "url": "https://www.minoritiesinstem.org",
         "logo": "https://www.minoritiesinstem.org/assets/images/logo.png"
       }
     </script>
+            <script type="application/ld+json">
+                        {
+                          "@context": "https://schema.org",
+                          "@type": "WebSite",
+                          "name": "Minorities In STEM",
+                          "url": "https://www.minoritiesinstem.org/",
+                          "potentialAction": {
+                            "@type": "SearchAction",
+                            "target": {
+                              "@type": "EntryPoint",
+                              "urlTemplate": "https://www.minoritiesinstem.org/search?q={search_term_string}"
+                            },
+                            "query-input": "required name=search_term_string"
+                }
+                        }
+            </script>
     <script src="/assets/site.js" defer></script>
   </head>
   <body>
