@@ -9,12 +9,28 @@
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "NonProfit",
+        "@type": "Organization",
         "name": "Minorities In STEM",
         "url": "https://www.minoritiesinstem.org",
         "logo": "https://www.minoritiesinstem.org/assets/images/logo.png"
       }
     </script>
+            <script type="application/ld+json">
+                        {
+                          "@context": "https://schema.org",
+                          "@type": "WebSite",
+                          "name": "Minorities In STEM",
+                          "url": "https://www.minoritiesinstem.org/",
+                          "potentialAction": {
+                            "@type": "SearchAction",
+                            "target": {
+                              "@type": "EntryPoint",
+                              "urlTemplate": "https://www.minoritiesinstem.org/search?q={search_term_string}"
+                            },
+                            "query-input": "required name=search_term_string"
+                }
+                        }
+            </script>
     <script src="/assets/site.js" defer></script>
   </head>
   <body>
@@ -290,7 +306,7 @@
               <p>Campus and community groups building local support.</p>
             </article>
             <article class="stat-card">
-              <span class="stat-value">200+</span>
+              <span class="stat-value">100</span>
               <h3>Volunteers</h3>
               <p>Students and community members directly supporting MIS chapters.</p>
             </article>
