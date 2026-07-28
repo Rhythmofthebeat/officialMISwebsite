@@ -9,6 +9,20 @@
 <link rel="icon" href="/assets/images/favicon.png" type="image/png" sizes="64x64">
 <link rel="apple-touch-icon" href="/assets/images/favicon.png">
 <script src="/assets/site.js" defer></script>
+<style>
+.been-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-4);}
+.been-item{margin:0;display:flex;flex-direction:column;background:var(--color-surface);border:1px solid oklch(from var(--color-border) l c h / 0.72);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);overflow:hidden;transition:transform var(--transition-interactive),box-shadow var(--transition-interactive);}
+.been-item:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px);}
+.been-item img{display:block;width:100%;aspect-ratio:4 / 3;object-fit:cover;}
+.been-caption{padding:var(--space-4);display:flex;flex-direction:column;gap:calc(var(--space-2) / 1.5);}
+.been-caption .eyebrow{margin:0;}
+.been-caption h3{margin:0;font-size:1.05rem;line-height:1.25;}
+.been-caption p{margin:0;color:var(--color-text-muted, inherit);font-size:0.95rem;}
+@media (max-width: 900px){
+  .been-grid{grid-auto-flow:column;grid-template-columns:none;grid-auto-columns:minmax(78%, 82%);grid-template-rows:1fr;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:var(--space-3);-webkit-overflow-scrolling:touch;}
+  .been-item{scroll-snap-align:start;}
+}
+</style>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to main content</a>
@@ -50,85 +64,70 @@
 </div>
 </section>
 
-<section class="section" aria-labelledby="field-notes-intro">
+<section class="section" aria-labelledby="been-heading">
 <div class="container">
 <div class="section-header centered">
 <p class="eyebrow">Field Notes</p>
-<h2 id="field-notes-intro">Impact moments from our partner network.</h2>
-<p class="lead">Each snapshot below is a distinct collaboration across robotics, advisory, conference, and industry partnership work. Interested in working together? <a href="/partners">Explore partnership opportunities</a> or <a href="/contact">get in touch</a>.</p>
+<h2 id="been-heading">Where we've been.</h2>
+<p class="lead">A look at the events, partners, and communities across the Minorities in STEM network. Interested in working together? <a href="/partners">Explore partnership opportunities</a> or <a href="/contact">get in touch</a>.</p>
 </div>
-</div>
-</section>
-
-<section class="section section-alt" aria-labelledby="note-frc">
-<div class="container two-column">
-<figure class="photo-panel">
-<img src="/assets/impact_img/1.png" alt="Minorities in STEM at FRC Worlds and partnering with FIRST Robotics">
-</figure>
-<div class="content-stack">
+<div class="been-grid" aria-label="Places and partners across the Minorities in STEM network">
+<figure class="been-item">
+<img src="/assets/impact_img/1.png" alt="Minorities in STEM at FRC Worlds partnering with FIRST Robotics">
+<figcaption class="been-caption">
 <p class="eyebrow">Robotics</p>
-<h2 id="note-frc">FRC Worlds &amp; partnering with FIRST Robotics.</h2>
-<p>On the ground at the FIRST Robotics World Championship, Minorities in STEM connected with competitive teams and mentors, sharing our mission with students already building at the highest level of youth robotics.</p>
-<p><a class="text-button" href="https://www.firstinspires.org/robotics/frc" target="_blank" rel="noopener">About FIRST Robotics</a></p>
-</div>
-</div>
-</section>
-
-<section class="section section-blue" aria-labelledby="note-iac">
-<div class="container two-column">
-<div class="content-stack">
-<p class="eyebrow">Advisory</p>
-<h2 id="note-iac">International Advisory Council.</h2>
-<p>Our International Advisory Council brings together leaders and mentors from around the world to guide the direction of Minorities in STEM and strengthen support for underrepresented students globally.</p>
-<p><em>Our first meeting with the IAC head team.</em></p>
-</div>
-<figure class="photo-panel">
+<h3>FRC Worlds &amp; FIRST Robotics</h3>
+<p>Connecting with competitive teams and mentors at the FIRST Robotics World Championship.</p>
+</figcaption>
+</figure>
+<figure class="been-item">
 <img src="/assets/impact_img/2.png" alt="Minorities in STEM International Advisory Council gathering">
+<figcaption class="been-caption">
+<p class="eyebrow">Advisory</p>
+<h3>International Advisory Council</h3>
+<p>Our first meeting with the IAC head team, guiding the direction of the network.</p>
+</figcaption>
 </figure>
-</div>
-</section>
-
-<section class="section section-alt" aria-labelledby="note-naeif-1">
-<div class="container two-column">
-<figure class="photo-panel">
+<figure class="been-item">
 <img src="/assets/impact_img/3.png" alt="Minorities in STEM presence at the NAEIF Conference">
+<figcaption class="been-caption">
+<p class="eyebrow">Conference</p>
+<h3>NAEIF Conference</h3>
+<p>Sharing our work with educators and organizations invested in equity across STEM.</p>
+</figcaption>
 </figure>
-<div class="content-stack">
-<p class="eyebrow">Conference</p>
-<h2 id="note-naeif-1">NAEIF Conference.</h2>
-<p>Representing Minorities in STEM at the NAEIF Conference, we shared our work with educators and organizations invested in equity and inclusion across the STEM pipeline.</p>
-</div>
-</div>
-</section>
-
-<section class="section section-blue" aria-labelledby="note-naeif-2">
-<div class="container two-column">
-<div class="content-stack">
-<p class="eyebrow">Conference</p>
-<h2 id="note-naeif-2">More from the NAEIF Conference.</h2>
-<p>Additional moments from NAEIF, where conversations with fellow advocates helped build momentum for new chapters, programs, and cross-organization collaboration.</p>
-</div>
-<figure class="photo-panel">
+<figure class="been-item">
 <img src="/assets/impact_img/4.png" alt="Additional Minorities in STEM moment from the NAEIF Conference">
+<figcaption class="been-caption">
+<p class="eyebrow">Conference</p>
+<h3>More from NAEIF</h3>
+<p>Conversations with fellow advocates building momentum for new chapters and programs.</p>
+</figcaption>
 </figure>
-</div>
-</section>
-
-<section class="section section-alt" aria-labelledby="note-kr3">
-<div class="container two-column">
-<figure class="photo-panel">
+<figure class="been-item">
 <img src="/assets/impact_img/5.png" alt="Minorities in STEM partnering with KR3 Information Systems">
-</figure>
-<div class="content-stack">
+<figcaption class="been-caption">
 <p class="eyebrow">Industry</p>
-<h2 id="note-kr3">Partnering with KR3 Information Systems.</h2>
-<p>Our partnership with KR3 Information Systems connects students to industry expertise and opportunities, extending the reach of Minorities in STEM into the professional technology sector.</p>
-<p><a class="text-button" href="/partners">See all partners</a></p>
+<h3>KR3 Information Systems</h3>
+<p>Connecting students to industry expertise and opportunities in the tech sector.</p>
+</figcaption>
+</figure>
+<figure class="been-item">
+<img src="/assets/images/worlds2.png" alt="Minorities in STEM team moment at FIRST Robotics Worlds">
+<figcaption class="been-caption">
+<p class="eyebrow">Robotics</p>
+<h3>On the ground at Worlds</h3>
+<p>Meeting students and community leaders from across the global STEM ecosystem.</p>
+</figcaption>
+</figure>
+</div>
+<div class="section-header centered" style="margin-top: var(--space-5);">
+<p><a class="button outline" href="/partners">See all partners</a></p>
 </div>
 </div>
 </section>
 
-<section class="section" aria-labelledby="press-coverage">
+<section class="section section-alt" aria-labelledby="press-coverage">
 <div class="container">
 <div class="section-header centered">
 <p class="eyebrow">In the Press</p>
