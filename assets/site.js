@@ -36,7 +36,8 @@ const navigation = [
     label: "Archive",
     items: [
       { label: "Archive", href: "/archive" },
-      { label: "Impact", href: "/impact" }
+      { label: "Impact 2024-2025 Report", href: "/impact" },
+      { label: "Press", href: "/press" }
     ]
   },
   {
