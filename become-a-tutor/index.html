@@ -1,119 +1,80 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Become a Tutor | Minorities in STEM</title>
-    <meta name="description" content="Apply to become a volunteer tutor with Minorities in STEM.">
-    <link rel="stylesheet" href="/assets/styles.css">
-        <link rel="icon" href="/assets/images/favicon.png" type="image/png" sizes="64x64">
-        <link rel="apple-touch-icon" href="/assets/images/favicon.png">
-    <script src="/assets/site.js" defer></script>
-  </head>
-  <body>
-    <a class="skip-link" href="#main">Skip to main content</a>
-    <div id="site-header"></div>
-    <main id="main">
-      <section class="hero page-hero" style="--page-hero-image: url('/assets/events_img/wavehack/img1.jpeg')" aria-labelledby="tutor-hero">
-        <div class="hero-content">
-          <p class="eyebrow">Tutor</p>
-          <h1 id="tutor-hero">Become a Tutor</h1>
-          <p class="lead">Join our tutor network — help students with short, focused weekly sessions.</p>
-          <div class="hero-actions">
-            <a class="button" href="#apply">Apply Now</a>
-            <a class="button secondary" href="/volunteer">Volunteer Opportunities</a>
-          </div>
-        </div>
-      </section>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Become a Tutor | Minorities in STEM</title>
+<meta name="description" content="Apply to become a volunteer tutor with Minorities in STEM and get listed on our Find a Tutor directory.">
+<link rel="stylesheet" href="/assets/styles.css">
+<link rel="icon" href="/assets/images/favicon.png" type="image/png" sizes="64x64">
+<link rel="apple-touch-icon" href="/assets/images/favicon.png">
+<script src="/assets/site.js" defer></script>
+<style>
+.tutor-signup-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);}
+.tutor-signup-grid .full{grid-column:1 / -1;}
+@media (max-width:640px){.tutor-signup-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to main content</a>
+<div id="site-header"></div>
+<main id="main">
+<section class="hero page-hero" style="--page-hero-image: url('/assets/events_img/wavehack/img1.jpeg')" aria-labelledby="tutor-hero">
+<div class="hero-content">
+<p class="eyebrow">Tutor</p>
+<h1 id="tutor-hero">Become a Tutor</h1>
+<p class="lead">Join our tutor network. Fill out the form below and you'll be listed on our Find a Tutor directory so students can reach you directly.</p>
+<div class="hero-actions">
+<a class="button" href="#apply">Apply Now</a>
+<a class="button secondary" href="/find-a-tutor">Browse Tutors</a>
+</div>
+</div>
+</section>
 
-      <section class="section" aria-labelledby="tutor-requirements">
-        <div class="container two-column">
-          <figure class="photo-panel">
-            <img src="/assets/images/heroimage.avif" alt="Students collaborating during an event">
-            <figcaption>Volunteer tutors mentor students at events, hackathons, and chapter meetings.</figcaption>
-          </figure>
-          <div class="content-stack">
-            <div class="section-header">
-              <p class="eyebrow">Requirements</p>
-              <h2 id="tutor-requirements">Who we're looking for</h2>
-            </div>
-            <p class="lead">Volunteers who can commit 2-4 hours weekly to mentor students in STEM subjects. University students and experienced high-school tutors are welcome.</p>
-            <div class="tutor-requirements">
-              <article>
-                <h3>Consistent</h3>
-                <p>Available for short weekly sessions and student follow-up.</p>
-              </article>
-              <article>
-                <h3>Prepared</h3>
-                <p>Comfortable explaining math, science, coding, or project work clearly.</p>
-              </article>
-              <article>
-                <h3>Supportive</h3>
-                <p>Patient with students who are building confidence in STEM.</p>
-              </article>
-            </div>
-          </div>
-        </div>
-      </section>
+<section class="section" aria-labelledby="tutor-requirements">
+<div class="container two-column">
+<figure class="photo-panel">
+<img src="/assets/images/heroimage.avif" alt="Students collaborating during an event">
+<figcaption>Volunteer tutors mentor students at events, hackathons, and chapter meetings.</figcaption>
+</figure>
+<div class="content-stack">
+<div class="section-header">
+<p class="eyebrow">Requirements</p>
+<h2 id="tutor-requirements">Who we're looking for</h2>
+</div>
+<p class="lead">Volunteers who can commit a few hours to mentor students in STEM subjects. University students and experienced high-school tutors are welcome.</p>
+<div class="tutor-requirements">
+<article><h3>Consistent</h3><p>Available for short weekly sessions and student follow-up.</p></article>
+<article><h3>Prepared</h3><p>Comfortable explaining math, science, coding, or project work clearly.</p></article>
+<article><h3>Supportive</h3><p>Patient with students who are building confidence in STEM.</p></article>
+</div>
+</div>
+</div>
+</section>
 
-      <section class="section section-alt" id="apply" aria-labelledby="tutor-apply">
-        <div class="container">
-          <div class="section-header">
-            <p class="eyebrow">Application</p>
-            <h2 id="tutor-apply">Tutor application</h2>
-          </div>
-
-          <div class="contact-layout tutor-application" data-tutor-app>
-            <form class="contact-card tutor-form" method="post" enctype="multipart/form-data">
-              <progress value="0" max="100" data-progress aria-hidden="true"></progress>
-
-              <div data-step>
-                <p class="eyebrow">Step 1 of 3</p>
-                <h3>Personal details</h3>
-                <div class="form-row"><label for="name">Name</label><input id="name" name="name" required></div>
-                <div class="form-row"><label for="email">Email</label><input id="email" name="email" type="email" required></div>
-                <div class="form-row"><label for="school">School or organization</label><input id="school" name="school"></div>
-                <div class="action-row"><button data-next class="button">Next</button></div>
-              </div>
-
-              <div data-step hidden>
-                <p class="eyebrow">Step 2 of 3</p>
-                <h3>Subjects and experience</h3>
-                <div class="form-row"><label for="subjects">Subjects</label><input id="subjects" name="subjects" placeholder="e.g., Math, Python"></div>
-                <div class="form-row"><label for="experience">Experience summary</label><textarea id="experience" name="experience_summary" rows="5" placeholder="Tutoring, teaching, or project experience"></textarea></div>
-                <div class="action-row">
-                  <button data-prev class="button outline">Back</button>
-                  <button data-next class="button">Next</button>
-                </div>
-              </div>
-
-              <div data-step hidden>
-                <p class="eyebrow">Step 3 of 3</p>
-                <h3>Availability and submit</h3>
-                <div class="form-row"><label for="availability">Weekly availability</label><input id="availability" name="availability" placeholder="e.g., Weeknights 6-9pm"></div>
-                <div class="form-row"><label for="format">Preferred format</label><select id="format" name="preferred_format"><option>Virtual</option><option>In-person</option><option>Either</option></select></div>
-                <div class="form-row"><label for="why">Short note (why tutor?)</label><textarea id="why" name="why" rows="3" required></textarea></div>
-                <div class="form-row"><label for="resume">Resume (optional)</label><input id="resume" name="resume" type="file" accept="application/pdf"></div>
-                <div class="action-row">
-                  <button data-prev class="button outline">Back</button>
-                  <button type="submit" class="button">Submit</button>
-                </div>
-                <p class="form-note" role="status" aria-live="polite"></p>
-              </div>
-            </form>
-
-            <aside class="contact-card tutor-facts">
-              <h3>Quick facts</h3>
-              <dl class="quick-facts">
-                <div><dt>Time</dt><dd>2-4 hours weekly</dd></div>
-                <div><dt>Format</dt><dd>Virtual or in-person</dd></div>
-                <div><dt>Focus</dt><dd>STEM homework, projects, and confidence</dd></div>
-              </dl>
-            </aside>
-          </div>
-        </div>
-      </section>
-    </main>
-    <div id="site-footer"></div>
-  </body>
+<section class="section section-alt" id="apply" aria-labelledby="tutor-apply">
+<div class="container">
+<div class="section-header">
+<p class="eyebrow">Application</p>
+<h2 id="tutor-apply">List yourself as a tutor</h2>
+<p class="lead">Share what you teach and the email students should use to reach you. When you submit, your card appears on the <a href="/find-a-tutor">Find a Tutor</a> directory and the MIS team is notified.</p>
+</div>
+<form class="contact-card" data-tutor-signup novalidate>
+<div class="tutor-signup-grid">
+<div class="form-row"><label for="t-name">Name</label><input id="t-name" name="name" autocomplete="name" required></div>
+<div class="form-row"><label for="t-email">Email (shown on your card)</label><input id="t-email" name="email" type="email" autocomplete="email" required></div>
+<div class="form-row"><label for="t-age">Age</label><input id="t-age" name="age" type="number" min="10" max="120" inputmode="numeric"></div>
+<div class="form-row"><label for="t-subject">Subject(s) you teach</label><input id="t-subject" name="subject" placeholder="e.g., Algebra, Biology, Python" required></div>
+<div class="form-row full"><label for="t-description">What you teach / description</label><textarea id="t-description" name="description" rows="4" placeholder="Describe the subjects you help with and how you like to teach." required></textarea></div>
+</div>
+<div class="action-row">
+<button class="button" type="submit">Submit &amp; get listed</button>
+<p class="form-note" role="status" aria-live="polite"></p>
+</div>
+</form>
+</div>
+</section>
+</main>
+<div id="site-footer"></div>
+</body>
 </html>
