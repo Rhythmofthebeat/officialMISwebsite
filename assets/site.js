@@ -14,6 +14,7 @@ const navigation = [
       { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
       { label: "Chapters", href: "/chapters" },
         { label: "Find a Tutor", href: "/find-a-tutor" },
+        { label: "AI Assistant", href: "/ai-assistant" },
       { label: "Become a Tutor", href: "/become-a-tutor" },
       { label: "Contact Us", href: "/contact" }
     ]
@@ -1609,3 +1610,79 @@ async function setupTutorDirectory() {
 }
 
 setupTutorDirectory();
+
+// ---- Become a Tutor: list the applicant on the directory + email the team ----
+async function setupTutorSignup() {
+  const form = document.querySelector("[data-tutor-signup]");
+  if (!form) return;
+  const note = form.querySelector(".form-note");
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    const fd = new FormData(form);
+    const ageRaw = String(fd.get("age") || "").trim();
+    const record = {
+      name: String(fd.get("name") || "").trim(),
+      email: String(fd.get("email") || "").trim(),
+      age: ageRaw ? Number(ageRaw) : null,
+      subject: String(fd.get("subject") || "").trim(),
+      description: String(fd.get("description") || "").trim()
+    };
+
+    setFormBusy(form, true);
+    setFormNote(note, "Submitting your tutor profile...");
+
+    // 1) Add the tutor to the public directory (Supabase)
+    let dbOk = true;
+    let dbMessage = "";
+    try {
+      const client = await getSupabaseClient();
+      if (client) {
+        const { error } = await client.from("tutors").insert(record);
+        if (error) { dbOk = false; dbMessage = error.message; }
+      } else {
+        dbOk = false;
+        dbMessage = "directory not connected";
+      }
+    } catch (err) {
+      dbOk = false;
+      dbMessage = err.message;
+    }
+
+    // 2) Email the MIS team via FormSubmit (works even if the directory insert fails)
+    try {
+      await fetch("https://formsubmit.co/ajax/bazarirhythm@gmail.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          _subject: "New tutor signup from minoritiesinstem.org",
+          _cc: "infominoritiesinstem@gmail.com",
+          _template: "table",
+          name: record.name,
+          email: record.email,
+          age: record.age || "",
+          subject: record.subject,
+          description: record.description
+        })
+      });
+    } catch (err) {
+      // Email is best-effort; do not block the user on it.
+    }
+
+    setFormBusy(form, false);
+
+    if (dbOk) {
+      form.reset();
+      setFormNote(note, "Thanks! You're now listed on the Find a Tutor directory.");
+    } else {
+      setFormNote(note, "We received your application by email. (Directory note: " + dbMessage + ")");
+      form.reset();
+    }
+  });
+}
+
+setupTutorSignup();
