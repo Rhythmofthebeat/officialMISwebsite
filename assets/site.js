@@ -1413,3 +1413,198 @@ function populateImagePanels() {
 }
 
 populateImagePanels();
+
+// ---- Find a Tutor directory (FFS-style) ----
+function initialsFromName(name) {
+  const parts = String(name || "").trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
+  if (parts.length === 1) return parts[0].slice(0, 1).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function parseSubjects(subject) {
+  return String(subject || "")
+    .split(/[,;/]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+}
+
+function shuffleArray(list) {
+  const arr = list.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function tutorCardHTML(tutor) {
+  const name = escapeHTML(tutor.name || "Tutor");
+  const initials = escapeHTML(initialsFromName(tutor.name));
+  const desc = escapeHTML(tutor.description || "");
+  const age = tutor.age ? '<p class="tutor-age">Age ' + escapeHTML(String(tutor.age)) + '</p>' : "";
+  const subjects = parseSubjects(tutor.subject);
+  const tags = subjects.length
+    ? '<p class="tutor-label">Subjects</p><ul class="tutor-tags">' +
+      subjects.map((s) => '<li class="tutor-tag">' + escapeHTML(s) + '</li>').join("") +
+      '</ul>'
+    : "";
+  const email = String(tutor.email || "").trim();
+  const contact = email
+    ? '<a class="button tutor-contact" href="mailto:' + encodeURIComponent(email).replace(/%40/g, "@") + '?subject=' + encodeURIComponent("Tutoring request via Minorities in STEM") + '">Email ' + name + '</a>'
+    : "";
+  return [
+    '<article class="tutor-card">',
+    '<div class="tutor-card-head">',
+    '<span class="tutor-avatar" aria-hidden="true">' + initials + '</span>',
+    '<div><h3>' + name + '</h3>' + age + '</div>',
+    '</div>',
+    desc ? '<p class="tutor-desc">' + desc + '</p>' : "",
+    tags,
+    contact,
+    '</article>'
+  ].join("");
+}
+
+async function setupTutorDirectory() {
+  const root = document.querySelector("[data-tutor-directory]");
+  if (!root) return;
+
+  const grid = root.querySelector("[data-tutor-grid]");
+  const countEl = root.querySelector("[data-tutor-count]");
+  const statusEl = root.querySelector("[data-tutor-status]");
+  const searchEl = root.querySelector("[data-tutor-search]");
+  const subjectEl = root.querySelector("[data-tutor-subject]");
+  const sortEl = root.querySelector("[data-tutor-sort]");
+  const shuffleBtn = root.querySelector("[data-tutor-shuffle]");
+  const form = document.querySelector("[data-tutor-form]");
+
+  let allTutors = [];
+  let shuffleSeed = [];
+
+  const setStatus = (msg, isError = false) => {
+    if (!statusEl) return;
+    statusEl.textContent = msg || "";
+    statusEl.classList.toggle("is-error", Boolean(isError));
+  };
+
+  const buildSubjectOptions = () => {
+    if (!subjectEl) return;
+    const set = new Set();
+    allTutors.forEach((t) => parseSubjects(t.subject).forEach((s) => set.add(s)));
+    const current = subjectEl.value;
+    const options = ['<option value="">All subjects</option>']
+      .concat([...set].sort((a, b) => a.localeCompare(b)).map((s) => '<option value="' + escapeHTML(s) + '">' + escapeHTML(s) + '</option>'));
+    subjectEl.innerHTML = options.join("");
+    subjectEl.value = current;
+  };
+
+  const render = () => {
+    if (!grid) return;
+    const query = (searchEl?.value || "").trim().toLowerCase();
+    const subject = subjectEl?.value || "";
+    const sort = sortEl?.value || "shuffle";
+
+    let list = allTutors.filter((t) => {
+      const haystack = [t.name, t.subject, t.description].join(" ").toLowerCase();
+      const matchesQuery = !query || haystack.includes(query);
+      const matchesSubject = !subject || parseSubjects(t.subject).some((s) => s === subject);
+      return matchesQuery && matchesSubject;
+    });
+
+    if (sort === "name") {
+      list.sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
+    } else if (sort === "newest") {
+      list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+    } else {
+      const order = new Map(shuffleSeed.map((id, i) => [id, i]));
+      list.sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0));
+    }
+
+    if (countEl) {
+      countEl.textContent = list.length + (list.length === 1 ? " tutor available" : " tutors available");
+    }
+
+    grid.innerHTML = list.length
+      ? list.map(tutorCardHTML).join("")
+      : '<p class="tutor-empty">No tutors match your search yet. Try a different subject or be the first to add yourself below.</p>';
+  };
+
+  const loadTutors = async () => {
+    const client = await getSupabaseClient();
+    if (!client) {
+      setStatus("The tutor directory is not connected yet. Add Supabase environment variables and redeploy.", true);
+      if (countEl) countEl.textContent = "0 tutors available";
+      grid.innerHTML = '<p class="tutor-empty">Directory unavailable right now.</p>';
+      return;
+    }
+    const { data, error } = await client
+      .from("tutors")
+      .select("id,name,email,age,subject,description,created_at")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      setStatus("Could not load tutors: " + error.message, true);
+      return;
+    }
+
+    allTutors = data || [];
+    shuffleSeed = shuffleArray(allTutors.map((t) => t.id));
+    buildSubjectOptions();
+    render();
+    setStatus("");
+  };
+
+  searchEl?.addEventListener("input", render);
+  subjectEl?.addEventListener("change", render);
+  sortEl?.addEventListener("change", () => {
+    if (sortEl.value === "shuffle") shuffleSeed = shuffleArray(allTutors.map((t) => t.id));
+    render();
+  });
+  shuffleBtn?.addEventListener("click", () => {
+    if (sortEl) sortEl.value = "shuffle";
+    shuffleSeed = shuffleArray(allTutors.map((t) => t.id));
+    render();
+  });
+
+  if (form) {
+    const note = form.querySelector(".form-note");
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      const client = await getSupabaseClient();
+      if (!client) {
+        setFormNote(note, "Directory is not connected yet.", true);
+        return;
+      }
+      const fd = new FormData(form);
+      const ageRaw = String(fd.get("age") || "").trim();
+      const record = {
+        name: String(fd.get("name") || "").trim(),
+        email: String(fd.get("email") || "").trim(),
+        age: ageRaw ? Number(ageRaw) : null,
+        subject: String(fd.get("subject") || "").trim(),
+        description: String(fd.get("description") || "").trim()
+      };
+      setFormBusy(form, true);
+      setFormNote(note, "Adding your tutor card...");
+      const { error } = await client.from("tutors").insert(record);
+      setFormBusy(form, false);
+      if (error) {
+        setFormNote(note, error.message, true);
+        return;
+      }
+      form.reset();
+      setFormNote(note, "You're listed! Your card now appears in the directory.");
+      await loadTutors();
+      document.querySelector("#directory")?.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+
+  await loadTutors();
+}
+
+setupTutorDirectory();
