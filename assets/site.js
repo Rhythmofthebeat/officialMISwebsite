@@ -13,6 +13,7 @@ const navigation = [
     items: [
       { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
       { label: "Chapters", href: "/chapters" },
+        { label: "Find a Tutor", href: "/find-a-tutor" },
       { label: "Become a Tutor", href: "/become-a-tutor" },
       { label: "Contact Us", href: "/contact" }
     ]
