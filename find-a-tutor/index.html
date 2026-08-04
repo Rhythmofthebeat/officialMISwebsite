@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Find a Tutor | Minorities in STEM</title>
-<meta name="description" content="Browse volunteer tutors with Minorities in STEM. Search by subject, read what each tutor teaches, and email them directly for free 1:1 help.">
+<meta name="description" content="Browse volunteer tutors with Minorities in STEM. Search by subject, read what each tutor teaches, and email them directly for free 1:1 help. Plus study with STEMbud, our free AI STEM assistant.">
 <link rel="stylesheet" href="/assets/styles.css">
 <link rel="icon" href="/assets/images/favicon.png" type="image/png" sizes="64x64">
 <link rel="apple-touch-icon" href="/assets/images/favicon.png">
@@ -30,6 +30,8 @@
 .tutor-tag{font-size:0.8rem;padding:0.25rem 0.65rem;border-radius:999px;background:oklch(from var(--color-primary,#7c3aed) l c h / 0.12);color:var(--color-primary,#7c3aed);font-weight:600;}
 .tutor-contact{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;}
 .tutor-empty{grid-column:1 / -1;text-align:center;padding:var(--space-5);color:var(--color-text-muted,inherit);}
+.app-embed{width:100%;border:1px solid oklch(from var(--color-border) l c h / 0.72);border-radius:var(--radius-xl);background:var(--color-surface);box-shadow:var(--shadow-md);overflow:hidden;}
+.app-embed iframe{display:block;width:100%;height:80vh;min-height:640px;border:0;}
 </style>
 </head>
 <body>
@@ -38,11 +40,12 @@
 <main id="main">
 <section class="hero page-hero" style="--page-hero-image: url('/assets/events_img/skillsUSA/IMG_0312_web.jpg')" aria-labelledby="tutor-hero">
 <div class="hero-content">
-<p class="eyebrow">Subjects &middot; Free Support &middot; Peer Tutors</p>
+<p class="eyebrow">Subjects &middot; Free Support &middot; Peer Tutors &middot; AI Assistant</p>
 <h1 id="tutor-hero">Find your tutor.</h1>
-<p class="lead">Search by subject or name, read what each tutor teaches, and email them directly for free 1:1 support.</p>
+<p class="lead">Search by subject or name, read what each tutor teaches, and email them directly for free 1:1 support &mdash; or study anytime with STEMbud, our free AI STEM assistant.</p>
 <div class="hero-actions">
 <a class="button" href="#directory">Browse Tutors</a>
+<a class="button secondary" href="#assistant">Ask STEMbud AI</a>
 <a class="button secondary" href="/become-a-tutor">Become a Tutor</a>
 </div>
 </div>
@@ -91,7 +94,20 @@
 </div>
 </section>
 
-<section class="section" aria-labelledby="cta-heading">
+<section class="section" id="assistant" aria-labelledby="assistant-heading">
+<div class="container">
+<div class="section-header">
+<p class="eyebrow">AI STEM Assistant</p>
+<h2 id="assistant-heading">Study with STEMbud</h2>
+<p class="lead">No tutor free right now? STEMbud is our free AI study partner &mdash; it explains concepts, generates practice quizzes, and helps you track your progress. If it does not load, you can <a href="https://ste-mbud.vercel.app/" target="_blank" rel="noopener">open STEMbud in a new tab</a>.</p>
+</div>
+<div class="app-embed">
+<iframe src="https://ste-mbud.vercel.app/" title="STEMbud AI STEM assistant" loading="lazy" allow="clipboard-write"></iframe>
+</div>
+</div>
+</section>
+
+<section class="section section-alt" aria-labelledby="cta-heading">
 <div class="container">
 <div class="section-header centered">
 <p class="eyebrow">Are you a tutor?</p>
