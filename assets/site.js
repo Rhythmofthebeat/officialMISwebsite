@@ -1686,3 +1686,61 @@ async function setupTutorSignup() {
 }
 
 setupTutorSignup();
+
+// ---- Route all remaining fake forms to real email via FormSubmit ----
+// Primary inbox: bazarirhythm@gmail.com, CC: infominoritiesinstem@gmail.com
+function setupRealEmailForms() {
+  const FORMSUBMIT_ENDPOINT = "https://formsubmit.co/ajax/bazarirhythm@gmail.com";
+  const CC_EMAIL = "infominoritiesinstem@gmail.com";
+
+  const selectors = ["[data-enhanced-form]", "[data-partner-form]"];
+  const forms = [...document.querySelectorAll(selectors.join(","))];
+
+  forms.forEach((original) => {
+    if (original.dataset.realEmailWired === "1") return;
+    const form = original.cloneNode(true);
+    form.dataset.realEmailWired = "1";
+    original.replaceWith(form);
+
+    const note = form.querySelector(".form-note");
+    const subject = form.matches("[data-partner-form]")
+      ? "New partner inquiry from minoritiesinstem.org"
+      : "New form submission from minoritiesinstem.org";
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+      const fd = new FormData(form);
+      const payload = { _subject: subject, _cc: CC_EMAIL, _template: "table" };
+      fd.forEach((value, key) => {
+        if (key.startsWith("_")) return;
+        payload[key] = typeof value === "string" ? value : "";
+      });
+
+      setFormBusy(form, true);
+      setFormNote(note, "Sending...");
+      try {
+        const response = await fetch(FORMSUBMIT_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(payload)
+        });
+        setFormBusy(form, false);
+        if (response.ok) {
+          form.reset();
+          setFormNote(note, form.dataset.success || "Thank you. Your message has been sent.");
+        } else {
+          setFormNote(note, "Something went wrong. Please email bazarirhythm@gmail.com directly.", true);
+        }
+      } catch (err) {
+        setFormBusy(form, false);
+        setFormNote(note, "Something went wrong. Please email bazarirhythm@gmail.com directly.", true);
+      }
+    });
+  });
+}
+
+setupRealEmailForms();
