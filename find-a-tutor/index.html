@@ -16,6 +16,7 @@
 .tutor-toolbar select{flex:0 1 180px;}
 .tutor-meta-row{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:var(--space-3);margin:var(--space-4) 0 var(--space-3);}
 .tutor-count{font-weight:600;margin:0;}
+.tutor-scroll{max-height:70vh;overflow-y:auto;padding:var(--space-2);margin:0 calc(-1 * var(--space-2));border-radius:var(--radius-xl);scrollbar-width:thin;}
 .tutor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:var(--space-4);}
 .tutor-card{position:relative;display:flex;flex-direction:column;gap:var(--space-3);background:var(--color-surface);border:1px solid oklch(from var(--color-border) l c h / 0.72);border-radius:var(--radius-xl);box-shadow:var(--shadow-md);padding:var(--space-4);transition:transform var(--transition-interactive),box-shadow var(--transition-interactive);}
 .tutor-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-4px);}
@@ -29,9 +30,6 @@
 .tutor-tag{font-size:0.8rem;padding:0.25rem 0.65rem;border-radius:999px;background:oklch(from var(--color-primary,#7c3aed) l c h / 0.12);color:var(--color-primary,#7c3aed);font-weight:600;}
 .tutor-contact{margin-top:auto;display:inline-flex;align-items:center;justify-content:center;gap:0.5rem;width:100%;}
 .tutor-empty{grid-column:1 / -1;text-align:center;padding:var(--space-5);color:var(--color-text-muted,inherit);}
-.tutor-submit-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-3);}
-.tutor-submit-grid .full{grid-column:1 / -1;}
-@media (max-width:640px){.tutor-submit-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -45,7 +43,7 @@
 <p class="lead">Search by subject or name, read what each tutor teaches, and email them directly for free 1:1 support.</p>
 <div class="hero-actions">
 <a class="button" href="#directory">Browse Tutors</a>
-<a class="button secondary" href="#become">List Yourself as a Tutor</a>
+<a class="button secondary" href="/become-a-tutor">Become a Tutor</a>
 </div>
 </div>
 </section>
@@ -86,31 +84,21 @@
 <p class="tutor-count" data-tutor-count>Loading tutors...</p>
 <button class="button outline" type="button" data-tutor-shuffle>Shuffle Tutors</button>
 </div>
+<div class="tutor-scroll">
 <div class="tutor-grid" data-tutor-grid aria-live="polite"></div>
+</div>
 <p class="form-note" role="status" aria-live="polite" data-tutor-status></p>
 </div>
 </section>
 
-<section class="section" id="become" aria-labelledby="become-heading">
+<section class="section" aria-labelledby="cta-heading">
 <div class="container">
-<div class="section-header">
-<p class="eyebrow">List Yourself</p>
-<h2 id="become-heading">Add yourself as a tutor</h2>
-<p class="lead">Share what you teach and your email. Your card appears in the directory so students can reach you directly.</p>
+<div class="section-header centered">
+<p class="eyebrow">Are you a tutor?</p>
+<h2 id="cta-heading">Join the directory.</h2>
+<p class="lead">Volunteer to help students in STEM and get your own tutor card on this page.</p>
+<p><a class="button" href="/become-a-tutor">Become a Tutor</a></p>
 </div>
-<form class="contact-card" data-tutor-form novalidate>
-<div class="tutor-submit-grid">
-<div class="form-row"><label for="t-name">Name</label><input id="t-name" name="name" autocomplete="name" required></div>
-<div class="form-row"><label for="t-email">Email (shown on your card)</label><input id="t-email" name="email" type="email" autocomplete="email" required></div>
-<div class="form-row"><label for="t-age">Age</label><input id="t-age" name="age" type="number" min="10" max="120" inputmode="numeric"></div>
-<div class="form-row"><label for="t-subject">Subject(s) you teach</label><input id="t-subject" name="subject" placeholder="e.g., Algebra, Biology, Python" required></div>
-<div class="form-row full"><label for="t-description">What you teach / description</label><textarea id="t-description" name="description" rows="4" placeholder="Describe the subjects you help with and how you like to teach." required></textarea></div>
-</div>
-<div class="action-row">
-<button class="button" type="submit">Add my tutor card</button>
-<p class="form-note" role="status" aria-live="polite"></p>
-</div>
-</form>
 </div>
 </section>
 </main>
