@@ -4189,3 +4189,24 @@ textarea {
     transform: none;
   }
 }
+
+.slides-frame {
+  width: min(100%, 960px);
+  margin: 0 auto;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+}
+
+.slides-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.slides-fallback {
+  margin-top: var(--space-4);
+  text-align: center;
+}
