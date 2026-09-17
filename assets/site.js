@@ -1,55 +1,37 @@
 const navigation = [
-  { label: "Home", href: "/" },
-  {
-    label: "About",
-    items: [
-      { label: "Our Team", href: "/about/team" },
-      { label: "Our Mission + Goal", href: "/about/mission" },
-      { label: "Partners", href: "/partners" }
-    ]
-  },
-  {
-    label: "Opportunities",
-    items: [
-      { label: "Starting a Chapter", href: "/get-involved/start-chapter" },
-      { label: "Chapters", href: "/chapters" },
-        { label: "Find a Tutor", href: "/find-a-tutor" },
-        { label: "AI Assistant", href: "/ai-assistant" },
-      { label: "Become a Tutor", href: "/become-a-tutor" },
-      { label: "Contact Us", href: "/contact" }
-    ]
-  },
-  { label: "Community", href: "/community" },
-  {
-    label: "Programs",
-    items: [
-      { label: "Supported Projects", href: "/projects" },
-      { label: "Community Inclusivity", href: "/initiatives/community-inclusivity" }
-    ]
-  },
-  {
-    label: "Events",
-    items: [
-      { label: "MISHacks Episode 1", href: "/hackathon" },
-      { label: "Event Calendar", href: "/events" }
-    ]
-  },
-  {
-    label: "Archive",
-    items: [
-      { label: "Archive", href: "/archive" },
-      { label: "Impact 2024-2025 Report", href: "/impact" },
-      { label: "Press", href: "/press" }
-    ]
-  },
-  {
-    label: "Resources",
-    items: [
-      { label: "Articles/Posts", href: "/resources/articles" },
-      { label: "Podcasts/Interviews", href: "/resources/podcasts" },
-      { label: "Resource Links", href: "/resources/links" }
-    ]
-  }
+  { label: "About", items: [
+    { label: "Our story & mission", href: "/about/mission" },
+    { label: "Our team", href: "/about/team" },
+    { label: "Partners", href: "/partners" },
+    { label: "Contact", href: "/contact" }
+  ]},
+  { label: "Programs", items: [
+    { label: "Find a tutor", href: "/find-a-tutor" },
+    { label: "Chapters", href: "/chapters" },
+    { label: "Supported projects", href: "/projects" },
+    { label: "Community inclusivity", href: "/initiatives/community-inclusivity" },
+    { label: "Events", href: "/events" },
+    { label: "MISHacks Episode 1", href: "/hackathon" }
+  ]},
+  { label: "Impact", items: [
+    { label: "Impact reports", href: "/impact" },
+    { label: "2024–2025 report", href: "/impact/2024-2025" },
+    { label: "2025–2026 report", href: "/impact/2025-2026" },
+    { label: "Past activities", href: "/archive" },
+    { label: "Press", href: "/press" }
+  ]},
+  { label: "Resources", items: [
+    { label: "Articles & posts", href: "/resources/articles" },
+    { label: "Podcasts & interviews", href: "/resources/podcasts" },
+    { label: "Resource links", href: "/resources/links" },
+    { label: "AI study assistant", href: "/ai-assistant" }
+  ]},
+  { label: "Get involved", items: [
+    { label: "Start a chapter", href: "/get-involved/start-chapter" },
+    { label: "Become a tutor", href: "/become-a-tutor" },
+    { label: "Community board", href: "/community" },
+    { label: "Fundraisers", href: "/get-involved/fundraisers" }
+  ]}
 ];
 
 const brandMark = `<img class="brand-mark" src="/assets/images/logo.png" alt="" aria-hidden="true">`;
@@ -115,7 +97,7 @@ function renderHeader() {
       <div class="container header-inner">
         <a class="brand" href="/" aria-label="Minorities in STEM home">
           ${brandMark}
-          <span class="brand-text">Minorities In Stem</span>
+          <span class="brand-text">Minorities in STEM</span>
         </a>
         <nav class="site-nav" id="primary-navigation" aria-label="Primary navigation">
           <div class="nav-shell">
@@ -150,7 +132,7 @@ function renderFooter() {
         <div class="footer-brand">
           <a class="brand" href="/" aria-label="Minorities in STEM home">
             ${brandMark}
-            <span class="brand-text">Minorities In Stem</span>
+            <span class="brand-text">Minorities in STEM</span>
           </a>
           <p>Rooted in diversity. Growing through STEM.</p>
           <ul class="social-list" aria-label="Social media links">
