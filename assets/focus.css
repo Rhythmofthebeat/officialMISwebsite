@@ -47,3 +47,5 @@
 
 .report-reading { max-width: 850px; }.report-reading > p { line-height: 1.85; margin-block: 18px; }.report-reading figure { margin: 30px 0; }.report-reading figcaption { font-size: .8rem; color: var(--color-text-muted); margin-top: 10px; }.report-reading .snapshot-grid { grid-template-columns: repeat(4,1fr); }
 @media(max-width:600px) { .report-reading .snapshot-grid { grid-template-columns: repeat(2,1fr); } }
+
+.focus-chapter-photo { margin: 0; min-width: 0; }.focus-chapter-photo img { display: block; width: 100%; height: auto; border-radius: 12px; }.focus-chapter-photo figcaption { display: flex; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: .8rem; color: var(--color-text-muted); }
