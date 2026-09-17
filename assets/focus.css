@@ -9,7 +9,7 @@
 .focus-hero-photo figcaption { display: flex; justify-content: space-between; gap: 12px; padding-top: 14px; font-size: .8rem; color: var(--color-text-muted); }
 .focus-hero-photo strong { color: var(--color-text); }
 .focus-snapshot { padding-block: 30px; border-block: 1px solid var(--color-divider); background: var(--color-surface-offset); }
-.snapshot-grid { display: grid; grid-template-columns: repeat(3,1fr) 1.1fr; align-items: center; gap: 24px; margin-block: 16px; }
+.snapshot-grid { display: grid; grid-template-columns: repeat(4,1fr); align-items: center; gap: 24px; margin-block: 16px; }
 .snapshot-grid p { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; margin: 0; }
 .snapshot-grid strong { font-family: var(--font-display); font-size: 2.75rem; font-weight: 700; line-height: 1; color: var(--color-primary); }
 .snapshot-grid span,.snapshot-grid a { font-size: .9rem; }
@@ -61,3 +61,5 @@
 .report-card .report-download { margin-top: 18px; font-size: .85rem; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }.report-download span { display: block; font-size: .7rem; color: var(--color-text-muted); font-weight: 400; margin-top: 7px; }
 .focused-home .text-button::before { content: none; }
 @media(max-width:700px) { .home-jump-links { gap: 12px 20px; }.home-jump-links span { width: 100%; }.field-stories { grid-template-columns: 1fr; gap: 20px; }.field-story-image img { height: 240px; }.origin-link { flex-direction: column; align-items: flex-start; gap: 12px; } }
+
+.snapshot-report-link { display: inline-block; margin-top: 12px; font-size: .9rem; font-weight: 700; text-underline-offset: 5px; }
