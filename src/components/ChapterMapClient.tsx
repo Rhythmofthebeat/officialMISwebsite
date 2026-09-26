@@ -47,7 +47,7 @@ export default function ChapterMapClient() {
                   {chapter.city}, {chapter.state}
                 </p>
                 <p>
-                  <strong>Founder:</strong> {chapter.founder}
+                  <strong>{chapter.role ?? "Founder"}:</strong> {chapter.founder}
                 </p>
                 <p>{chapter.description}</p>
               </div>

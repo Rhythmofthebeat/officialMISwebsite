@@ -45,7 +45,7 @@ function popupHTML(chapter) {
     '<div class="map-info-window">',
     '<h3>' + escapeHTML(chapter.name) + '</h3>',
     '<p>' + escapeHTML(chapter.city + ", " + chapter.state) + '</p>',
-    '<p><strong>Founder:</strong> ' + escapeHTML(chapter.founder) + '</p>',
+    '<p><strong>' + escapeHTML(chapter.role || "Founder") + ':</strong> ' + escapeHTML(chapter.founder) + '</p>',
     '<p>' + escapeHTML(chapter.description) + '</p>',
     '</div>'
   ].join("");
@@ -58,7 +58,7 @@ function renderChapterList(list, map, markers) {
       '<button type="button" data-map-location-index="' + index + '">' +
       '<strong>' + escapeHTML(chapter.name) + '</strong>' +
       '<span>' + escapeHTML(chapter.city + ", " + chapter.state) + '</span>' +
-      '<span>' + escapeHTML("Founder: " + chapter.founder) + '</span>' +
+      '<span>' + escapeHTML((chapter.role || "Founder") + ": " + chapter.founder) + '</span>' +
       '</button>'
     ))
     .join("");

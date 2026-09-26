@@ -2,6 +2,7 @@ export type Chapter = {
   id: string;
   name: string;
   founder: string;
+  role?: string;
   city: string;
   state: string;
   lat: number;
@@ -154,6 +155,7 @@ export const chapters: Chapter[] = [
     id: "wallington-county-grammar",
     name: "Wallington County Grammar School",
     founder: "Abdullah Mubeen",
+    role: "London Director",
     city: "London",
     state: "England",
     lat: 51.5072,
@@ -229,5 +231,16 @@ export const chapters: Chapter[] = [
     lat: 27.4924,
     lng: 77.6737,
     description: "Campus chapter connecting students to STEM learning and leadership."
+  },
+  {
+    id: "west-philadelphia-high",
+    name: "West Philadelphia High School",
+    founder: "Mohammad Sami",
+    role: "Pennsylvania Director",
+    city: "Philadelphia",
+    state: "Pennsylvania, USA",
+    lat: 39.9586,
+    lng: -75.2173,
+    description: "Pennsylvania director opening new chapters across Philadelphia."
   }
 ];

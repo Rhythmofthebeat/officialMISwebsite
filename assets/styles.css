@@ -1197,6 +1197,7 @@ p {
 
 .profile-card {
   display: grid;
+  align-content: start;
   justify-items: start;
   gap: var(--space-4);
   padding: var(--space-5);
@@ -4311,4 +4312,9 @@ textarea {
 .slides-fallback {
   margin-top: var(--space-4);
   text-align: center;
+}
+
+.team-regional-note {
+  margin-top: var(--space-6);
+  color: var(--color-text-muted);
 }
