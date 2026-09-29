@@ -1,6 +1,7 @@
 # Minorities in STEM Website
 
-Static public website for Minorities in STEM, a student-founded nonprofit founded in 2024 at Woodward Academy.
+Static public website for Minorities in STEM, a student-founded nonprof
+it founded in 2024 at Woodward Academy.
 
 ## Project Structure
 
